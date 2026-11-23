@@ -3,215 +3,264 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0b0e14">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Trading Assistant</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#0b0e14;color:#e6edf7;font-family:Arial,sans-serif}
-button,input{font:inherit}
-.app{display:flex;height:100dvh}
-.sidebar{width:270px;background:#111720;border-right:1px solid #263041;padding:18px;display:flex;flex-direction:column}
-.logo{font-weight:bold;font-size:20px;margin-bottom:24px;color:#65a9ff}
-.panel{background:#19212d;border:1px solid #283446;border-radius:12px;padding:14px;margin-bottom:12px}
-.label{font-size:11px;color:#8e9aab;margin-bottom:8px}
-.menu{padding:11px;border-radius:9px;margin:5px 0;color:#b7c2d2}
-.menu.active{background:#1c2b40;color:#69aaff}
-.sidebar-bottom{margin-top:auto;color:#718096;font-size:12px}
+.app{display:flex;height:100vh}
+.sidebar{width:290px;background:#111720;border-right:1px solid #263041;padding:18px;display:flex;flex-direction:column}
+.logo{font-size:22px;font-weight:bold;color:#65a9ff;margin-bottom:25px}
+.card{background:#192230;border:1px solid #283447;border-radius:13px;padding:15px;margin-bottom:12px}
+.label{font-size:12px;color:#8e9ab0;margin-bottom:8px}
+.status{font-size:16px;font-weight:bold}
+.green{color:#38d996}
+.red{color:#ff6868}
+.menu{padding:12px;border-radius:9px;margin:5px 0;color:#b7c2d2}
+.menu.active{background:#1c2b40;color:#65a9ff}
 .main{flex:1;display:flex;flex-direction:column;min-width:0}
-.header{height:60px;border-bottom:1px solid #252e3b;padding:0 20px;display:flex;align-items:center;justify-content:space-between}
-.header small{color:#94a3b8}
-.chat{flex:1;overflow:auto;padding:25px}
-.welcome{text-align:center;margin:40px auto 30px;max-width:600px}
-.welcome h1{font-size:28px}
-.welcome p{color:#9ba8b9;line-height:1.7}
-.messages{max-width:800px;margin:auto}
-.msg{padding:13px 17px;margin:12px 0;border-radius:14px;white-space:pre-wrap;line-height:1.6;max-width:90%;word-break:break-word}
-.user{margin-left:auto;background:#1d4b82}
-.assistant{background:#171f2b;border:1px solid #273243}
-.task{background:#171f2b;border:1px solid #293547;padding:12px;border-radius:12px;margin:8px 0}
-.task-title{font-weight:bold}
-.task-info{font-size:12px;color:#9aa8ba;margin-top:6px;line-height:1.5}
-.task-actions{display:flex;gap:8px;margin-top:10px}
-.task-actions button{background:#273447;border:0;color:#cbd5e1;padding:6px 10px;border-radius:7px;cursor:pointer}
-.task-actions button.stop{color:#ffb5b5}
-.task-actions button.delete{color:#aab7c8}
-.input-area{padding:15px;border-top:1px solid #252e3b}
-.input-box{max-width:850px;margin:auto;display:flex;background:#171f2b;border:1px solid #344154;border-radius:14px}
-.input-box input{flex:1;background:transparent;color:white;border:0;outline:none;padding:17px;min-width:0}
-.send{border:0;background:#2878ed;color:white;padding:0 22px;border-radius:0 13px 13px 0;cursor:pointer}
-.hint{text-align:center;font-size:11px;color:#718096;margin-top:9px}
-.section-title{font-size:12px;color:#8e9aab;margin:18px 0 8px}
-.badge{display:inline-block;font-size:11px;padding:4px 7px;border-radius:20px;background:#213c32;color:#8de0b1}
-.empty{font-size:12px;color:#8190a4;padding:8px}
-@media(max-width:700px){.sidebar{width:215px;padding:12px}.chat{padding:12px}.header{padding:0 12px}}
-@media(max-width:500px){.sidebar{width:75px;padding:8px}.logo{font-size:12px;line-height:1.5}.panel{padding:7px;text-align:center}.panel .label,.sidebar-bottom{display:none}.menu{font-size:11px;padding:9px 3px;text-align:center}.header small{font-size:10px}}
+.header{padding:20px;border-bottom:1px solid #263041;font-weight:bold}
+.content{flex:1;overflow:auto;padding:22px}
+h2{margin-top:0}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.metric{background:#192230;border:1px solid #283447;border-radius:12px;padding:18px}
+.metric .value{font-size:24px;font-weight:bold;margin-top:8px}
+input,button{font:inherit}
+input{background:#0b0e14;color:#fff;border:1px solid #344155;border-radius:9px;padding:12px;width:100%;margin:6px 0}
+button{background:#2878ef;color:white;border:0;border-radius:9px;padding:12px 16px;cursor:pointer}
+button:hover{opacity:.88}
+.connection{margin-bottom:18px}
+.note{font-size:12px;color:#94a3b8;margin-top:8px}
+.chatbox{margin-top:22px;background:#192230;border:1px solid #283447;border-radius:12px;padding:18px}
+@media(max-width:800px){
+.sidebar{width:220px}
+.grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:550px){
+.app{flex-direction:column}
+.sidebar{width:100%;height:auto;padding:12px}
+.logo{margin-bottom:12px}
+.sidebar .menu{display:none}
+.main{height:calc(100vh - 150px)}
+.grid{grid-template-columns:repeat(2,1fr)}
+.content{padding:12px}
+.metric{padding:12px}
+.metric .value{font-size:20px}
+}
 </style>
 </head>
 <body>
 <div class="app">
+
 <aside class="sidebar">
-<div class="logo">🤖 AI Assistant</div>
+  <div class="logo">🤖 AI Assistant</div>
 
-<div class="panel">
-<div class="label">KẾT NỐI THỊ TRƯỜNG</div>
-<div>🟡 MT5 chưa kết nối</div>
-<div style="font-size:11px;color:#91a0b4;margin-top:6px">Chưa nhận dữ liệu realtime</div>
-</div>
+  <div class="card">
+    <div class="label">KẾT NỐI THỊ TRƯỜNG</div>
+    <div class="status" id="connectionStatus">🟡 Chưa kết nối</div>
+    <div class="note" id="connectionDetail">Đang chờ kết nối MT5</div>
+  </div>
 
-<div class="panel">
-<div class="label">NHIỆM VỤ ĐANG CHẠY</div>
-<div id="taskCount">0 nhiệm vụ</div>
-</div>
+  <div class="card">
+    <div class="label">TÀI KHOẢN MT5</div>
+    <div id="loginInfo">Chưa có dữ liệu</div>
+  </div>
 
-<div class="section-title">MENU</div>
-<div class="menu active">💬 Trợ lý</div>
-<div class="menu">📋 Nhiệm vụ</div>
-<div class="menu">🔔 Thông báo</div>
-<div class="sidebar-bottom">AI Trading Assistant</div>
+  <div class="menu active">💬 Trợ lý</div>
+  <div class="menu">📋 Nhiệm vụ</div>
+  <div class="menu">🔔 Thông báo</div>
 </aside>
 
 <main class="main">
-<header class="header">
-<strong>Trợ lý giao dịch</strong>
-<small id="connection">Task Manager · Local</small>
-</header>
+  <div class="header">Trợ lý giao dịch AI</div>
 
-<section class="chat" id="chat">
-<div class="welcome" id="welcome">
-<h1>Trợ lý giao dịch AI</h1>
-<p>Giao nhiệm vụ bằng ngôn ngữ tự nhiên.<br>
-Tôi sẽ hiểu yêu cầu và tạo nhiệm vụ theo dõi cho bạn.</p>
-<div class="panel" style="text-align:left">
-<div class="label">VÍ DỤ</div>
-<div>• Theo dõi XAUUSD RSI M5 về 60 thì báo tôi.</div>
-<div>• Theo dõi BTCUSD RSI M15 xuống 30.</div>
-<div>• Liệt kê nhiệm vụ đang chạy.</div>
-<div>• Dừng nhiệm vụ theo dõi RSI XAUUSD.</div>
-</div>
-</div>
-<div class="messages" id="messages"></div>
-<div class="section-title" style="max-width:850px;margin:25px auto 10px">NHIỆM VỤ</div>
-<div id="tasks" style="max-width:850px;margin:auto"></div>
-</section>
+  <div class="content">
 
-<div class="input-area">
-<div class="input-box">
-<input id="input" placeholder="Nhập yêu cầu..." autocomplete="off">
-<button class="send" onclick="send()">➤</button>
-</div>
-<div class="hint">Enter để gửi · Shift+Enter không áp dụng</div>
-</div>
+    <h2>Trạng thái MT5</h2>
+
+    <div class="card connection">
+      <div class="label">CẤU HÌNH KẾT NỐI BRIDGE</div>
+
+      <label class="label">Cloudflare Tunnel URL</label>
+      <input id="bridgeUrl" placeholder="https://your-tunnel.trycloudflare.com">
+
+      <label class="label">Bridge Token</label>
+      <input id="bridgeToken" type="password" placeholder="Nhập Bridge Token">
+
+      <button onclick="connectBridge()">Kết nối MT5</button>
+      <button onclick="disconnectBridge()" style="background:#384456;margin-left:5px">Ngắt</button>
+
+      <div class="note">
+        Token được lưu trên trình duyệt hiện tại. Không đưa Token vào GitHub.
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="metric">
+        <div class="label">Balance</div>
+        <div class="value" id="balance">--</div>
+      </div>
+      <div class="metric">
+        <div class="label">Equity</div>
+        <div class="value" id="equity">--</div>
+      </div>
+      <div class="metric">
+        <div class="label">Margin</div>
+        <div class="value" id="margin">--</div>
+      </div>
+      <div class="metric">
+        <div class="label">Free Margin</div>
+        <div class="value" id="freeMargin">--</div>
+      </div>
+      <div class="metric">
+        <div class="label">Profit</div>
+        <div class="value" id="profit">--</div>
+      </div>
+      <div class="metric">
+        <div class="label">Tài khoản</div>
+        <div class="value" id="account">--</div>
+      </div>
+      <div class="metric">
+        <div class="label">Server</div>
+        <div class="value" id="server">--</div>
+      </div>
+      <div class="metric">
+        <div class="label">Trade Allowed</div>
+        <div class="value" id="tradeAllowed">--</div>
+      </div>
+    </div>
+
+    <div class="chatbox">
+      <h3>🤖 Trợ lý giao dịch</h3>
+      <p>MT5 Bridge đã được tích hợp vào giao diện.</p>
+      <p id="lastUpdate" class="note">Chưa nhận dữ liệu.</p>
+    </div>
+
+  </div>
 </main>
 </div>
 
 <script>
-const STORAGE_KEY="trading_assistant_tasks_v1";
-let tasks=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
+const DEFAULT_URL = "https://blocks-transmit-shuttle-medicines.trycloudflare.com";
 
-function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(tasks));renderTasks()}
+const urlInput = document.getElementById("bridgeUrl");
+const tokenInput = document.getElementById("bridgeToken");
 
-function addMessage(text,type){
- const el=document.createElement("div");
- el.className="msg "+type;
- el.textContent=text;
- document.getElementById("messages").appendChild(el);
- document.getElementById("chat").scrollTop=document.getElementById("chat").scrollHeight;
+urlInput.value = localStorage.getItem("bridge_url") || DEFAULT_URL;
+tokenInput.value = localStorage.getItem("bridge_token") || "";
+
+let pollTimer = null;
+
+function setStatus(text, color, detail){
+  const el = document.getElementById("connectionStatus");
+  el.textContent = text;
+  el.className = "status " + color;
+  document.getElementById("connectionDetail").textContent = detail || "";
 }
 
-function renderTasks(){
- const container=document.getElementById("tasks");
- container.innerHTML="";
- const active=tasks.filter(t=>t.status==="active");
- document.getElementById("taskCount").textContent=active.length+" nhiệm vụ";
-
- if(!tasks.length){
-  container.innerHTML='<div class="empty">Chưa có nhiệm vụ nào.</div>';
-  return;
- }
-
- tasks.slice().reverse().forEach(t=>{
-  const card=document.createElement("div");
-  card.className="task";
-  const status=t.status==="active"?"🟢 Đang theo dõi":t.status==="stopped"?"⏸ Đã dừng":"✓ Hoàn thành";
-  card.innerHTML=`
-   <div class="task-title">${escapeHtml(t.title)}</div>
-   <div class="task-info">${escapeHtml(t.description)}<br>Trạng thái: ${status}<br>Tạo lúc: ${new Date(t.created).toLocaleString("vi-VN")}</div>
-   <div class="task-actions">
-   ${t.status==="active"?'<button class="stop" onclick="stopTask('+t.id+')">Dừng</button>':''}
-   <button class="delete" onclick="deleteTask('+t.id+')">Xóa</button>
-   </div>`;
-  container.appendChild(card);
- });
+function money(value){
+  if(value === undefined || value === null) return "--";
+  return Number(value).toLocaleString("en-US", {
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+  });
 }
 
-function escapeHtml(s){
- return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+async function fetchMT5(){
+  const url = urlInput.value.trim().replace(/\/+$/,"");
+  const token = tokenInput.value.trim();
+
+  if(!url || !token) return;
+
+  try{
+    const response = await fetch(url + "/api/status", {
+      method:"GET",
+      headers:{
+        "X-Bridge-Token":token
+      }
+    });
+
+    if(!response.ok){
+      throw new Error("HTTP " + response.status);
+    }
+
+    const data = await response.json();
+
+    if(!data.connected || !data.terminal_connected){
+      throw new Error("MT5 chưa kết nối Terminal");
+    }
+
+    setStatus("🟢 MT5 đã kết nối","green",
+      "Đang nhận dữ liệu tài khoản thật");
+
+    document.getElementById("balance").textContent =
+      money(data.balance) + " " + (data.currency || "");
+
+    document.getElementById("equity").textContent =
+      money(data.equity) + " " + (data.currency || "");
+
+    document.getElementById("margin").textContent =
+      money(data.margin) + " " + (data.currency || "");
+
+    document.getElementById("freeMargin").textContent =
+      money(data.free_margin) + " " + (data.currency || "");
+
+    document.getElementById("profit").textContent =
+      money(data.profit) + " " + (data.currency || "");
+
+    document.getElementById("account").textContent =
+      data.login || "--";
+
+    document.getElementById("server").textContent =
+      data.server || "--";
+
+    document.getElementById("tradeAllowed").textContent =
+      data.trade_allowed ? "YES" : "NO";
+
+    document.getElementById("loginInfo").textContent =
+      (data.login || "--") + " · " + (data.server || "--");
+
+    document.getElementById("lastUpdate").textContent =
+      "Cập nhật lúc: " + new Date().toLocaleTimeString("vi-VN");
+
+  }catch(error){
+    setStatus("🔴 Không kết nối được MT5","red",error.message);
+    document.getElementById("lastUpdate").textContent =
+      "Lỗi: " + error.message;
+  }
 }
 
-function stopTask(id){
- const t=tasks.find(x=>x.id===id);
- if(t){t.status="stopped";save();addMessage("Đã dừng nhiệm vụ: "+t.title,"assistant")}
-}
-function deleteTask(id){tasks=tasks.filter(x=>x.id!==id);save()}
+function connectBridge(){
+  const url = urlInput.value.trim().replace(/\/+$/,"");
+  const token = tokenInput.value.trim();
 
-function createRSITask(text){
- const symbolMatch=text.match(/\b(XAUUSD|BTCUSD|USDJPY|EURUSD|GBPUSD)\b/i);
- const tfMatch=text.match(/\b(M1|M5|M15|M30|H1|H4|D1)\b/i);
- const valueMatch=text.match(/(?:về|xuống|đến|chạm|mức|level)\s*(\d+(?:[.,]\d+)?)/i)
-  ||text.match(/RSI\s*(?:<=|=|<|>|≥|≤)?\s*(\d+(?:[.,]\d+)?)/i);
- if(!symbolMatch||!tfMatch||!valueMatch)return null;
+  if(!url || !token){
+    alert("Nhập Tunnel URL và Bridge Token.");
+    return;
+  }
 
- const symbol=symbolMatch[1].toUpperCase();
- const tf=tfMatch[1].toUpperCase();
- const value=parseFloat(valueMatch[1].replace(",","."));
- const direction=/tăng|lên|trên|vượt/i.test(text)?"tăng tới":/giảm|xuống|dưới/i.test(text)?"giảm tới":"chạm";
- return {
-  id:Date.now(),
-  title:`Theo dõi RSI ${symbol} ${tf}`,
-  description:`RSI(14) ${direction} ${value} · Hành động: thông báo`,
-  symbol,timeframe:tf,indicator:"RSI",period:14,value,
-  status:"active",created:new Date().toISOString()
- };
+  localStorage.setItem("bridge_url",url);
+  localStorage.setItem("bridge_token",token);
+
+  if(pollTimer) clearInterval(pollTimer);
+
+  fetchMT5();
+  pollTimer = setInterval(fetchMT5,5000);
 }
 
-function send(){
- const input=document.getElementById("input");
- const text=input.value.trim();
- if(!text)return;
- document.getElementById("welcome").style.display="none";
- addMessage(text,"user");
- input.value="";
+function disconnectBridge(){
+  if(pollTimer) clearInterval(pollTimer);
+  pollTimer = null;
 
- const lower=text.toLowerCase();
+  localStorage.removeItem("bridge_token");
+  tokenInput.value="";
 
- if(/liệt kê|danh sách|nhiệm vụ đang chạy|task đang chạy/.test(lower)){
-  const active=tasks.filter(t=>t.status==="active");
-  addMessage(active.length? "Các nhiệm vụ đang chạy:\n"+active.map((t,i)=>`${i+1}. ${t.title} — ${t.description}`).join("\n"):"Hiện không có nhiệm vụ nào đang chạy.","assistant");
-  return;
- }
-
- if(/dừng|hủy|cancel/.test(lower)&&/rsi|theo dõi|nhiệm vụ/.test(lower)){
-  const active=tasks.filter(t=>t.status==="active");
-  if(active.length===1){stopTask(active[0].id);addMessage("Đã dừng nhiệm vụ theo dõi.","assistant");return}
-  addMessage("Có "+active.length+" nhiệm vụ đang chạy. Hãy bấm Dừng ở nhiệm vụ muốn hủy trong danh sách bên dưới.","assistant");
-  return;
- }
-
- const task=createRSITask(text);
- if(task){
-  tasks.push(task);save();
-  addMessage("Đã hiểu yêu cầu và tạo nhiệm vụ:\n\n"+task.title+"\n"+task.description+"\n\nTrạng thái: Đang lưu nhiệm vụ.\n\nLưu ý: website chưa kết nối MT5 nên chưa thể theo dõi RSI thực tế hoặc gửi thông báo khi điều kiện đạt.","assistant");
-  return;
- }
-
- addMessage("Tôi đã nhận yêu cầu. Hiện Task Manager hỗ trợ tạo nhiệm vụ theo dõi RSI với mã giao dịch, khung thời gian và mức RSI. Các yêu cầu khác chưa được kết nối xử lý.","assistant");
+  setStatus("🟡 Đã ngắt kết nối","red","Bridge Token đã được xóa");
 }
 
-document.getElementById("input").addEventListener("keydown",e=>{
- if(e.key==="Enter"){e.preventDefault();send()}
-});
-renderTasks();
+if(localStorage.getItem("bridge_token")){
+  connectBridge();
+}
 </script>
 </body>
 </html>
