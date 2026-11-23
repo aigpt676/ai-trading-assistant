@@ -3,20 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0b1018">
 <title>AI Trading Assistant</title>
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#0b0f15;color:#e7edf6;font:15px Arial,sans-serif}
+body{margin:0;background:#0b0f15;color:#e7edf6;font:15px Arial}
 button,input,select{font:inherit}
 button{cursor:pointer;border:0;border-radius:9px;padding:10px 13px;background:#2563eb;color:white}
 button:hover{opacity:.88}
-button.secondary{background:#202a38;border:1px solid #344254}
-button.danger{background:#7f2630}
+.secondary{background:#202a38!important;border:1px solid #344254}
+.danger{background:#7f2630!important}
 .layout{display:flex;min-height:100vh}
-.sidebar{width:270px;background:#111923;border-right:1px solid #283344;padding:18px;display:flex;flex-direction:column;gap:12px}
-.brand{font-size:20px;font-weight:bold;color:#67a8ff}
+.sidebar{width:260px;background:#111923;border-right:1px solid #283344;padding:18px;display:flex;flex-direction:column;gap:12px}
+.brand{font-size:20px;font-weight:bold;color:#67a8ff;margin-bottom:12px}
 .card{background:#182230;border:1px solid #2b3a4d;border-radius:13px;padding:15px}
 .small{color:#91a7c1;font-size:12px}
 .status{font-size:16px;margin-top:8px}
@@ -35,13 +34,11 @@ button.danger{background:#7f2630}
 .field input,.field select{width:100%;background:#0c131d;color:#e8eef7;border:1px solid #344357;border-radius:9px;padding:11px}
 .chatbox{display:flex;gap:10px;margin-top:14px}
 .chatbox input{flex:1;background:#172231;border:1px solid #324156;border-radius:10px;padding:14px;color:#fff}
-.messages{display:flex;flex-direction:column;gap:10px;max-height:500px;overflow:auto}
+.messages{display:flex;flex-direction:column;gap:10px;max-height:420px;overflow:auto}
 .msg{padding:12px;border-radius:12px;max-width:95%;white-space:pre-wrap;line-height:1.5}
 .msg.user{align-self:flex-end;background:#1e4f91}
 .msg.bot{background:#1a2432}
-.msg.system{background:#192b25;border:1px solid #2b5140}
 .task{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border:1px solid #304053;border-radius:11px;padding:13px;margin:10px 0}
-.tasktitle{font-weight:bold}
 .tag{font-size:12px;padding:4px 8px;border-radius:30px;background:#25384d;color:#a9d0ff}
 .taskactions{display:flex;gap:5px;flex-wrap:wrap}
 .taskactions button{padding:7px 9px;font-size:12px}
@@ -49,10 +46,15 @@ button.danger{background:#7f2630}
 .footerhint{color:#7f91a9;font-size:12px;margin-top:8px}
 .toast{position:fixed;right:20px;bottom:20px;background:#203147;border:1px solid #47607d;padding:14px 18px;border-radius:10px;display:none;max-width:350px;z-index:999}
 .mobilemenu{display:none}
-.analysisout{white-space:pre-wrap;line-height:1.6}
+.analysisout{white-space:pre-wrap;line-height:1.55}
 .symbolrow{display:flex;gap:10px;flex-wrap:wrap}
 .symbolrow select{flex:1;min-width:130px;background:#0c131d;color:#e8eef7;border:1px solid #344357;border-radius:9px;padding:11px}
-@media(max-width:900px){.sidebar{width:220px}.content{padding:15px}}
+
+@media(max-width:1000px){
+.sidebar{width:230px}
+.content{padding:15px}
+}
+
 @media(max-width:620px){
 .layout{display:block}
 .sidebar{width:100%;padding:12px;display:block}
@@ -88,7 +90,7 @@ button.danger{background:#7f2630}
 </div>
 
 <div class="nav">
-<div class="small" style="margin:12px 0">MENU</div>
+<div class="small">MENU</div>
 <button class="active" onclick="showPage('assistant',this)">💬 Trợ lý</button>
 <button onclick="showPage('tasks',this)">📋 Nhiệm vụ</button>
 <button onclick="showPage('alerts',this)">🔔 Thông báo</button>
@@ -104,44 +106,50 @@ button.danger{background:#7f2630}
 </select>
 </div>
 
-<div class="small" style="margin-top:20px">AI Trading Assistant · Ollama · MT5</div>
+<div class="small" style="margin-top:auto">AI Trading Assistant · MT5 Bridge</div>
 </aside>
 
 <main class="main">
 <div class="top">
 <b id="pageTitle">Trợ lý giao dịch</b>
-<span class="small">AI Agent · MT5</span>
+<span class="small">Local AI · MT5 Bridge</span>
 </div>
 
+<!-- TRỢ LÝ -->
 <section id="assistant" class="content page">
+
 <div class="hero">
 <h1>Trợ lý giao dịch AI</h1>
-<div class="small">Chat tự nhiên · Phân tích thị trường · Theo dõi tự động</div>
+<div class="small">Chat với AI · Phân tích MT5 · Quản lý nhiệm vụ theo dõi</div>
 </div>
 
 <div class="panel">
-<div class="small">AI CÓ THỂ THỰC HIỆN</div>
-<p>• Phân tích XAUUSD, BTCUSD, USDJPY.</p>
-<p>• Đọc nhiều khung thời gian H1, M15, M5, M1.</p>
-<p>• Tạo nhiệm vụ theo dõi RSI.</p>
-<p>• Liệt kê, dừng, tiếp tục và xóa nhiệm vụ.</p>
-<p>• Trả lời câu hỏi và phân tích dựa trên dữ liệu MT5 thực.</p>
+<div class="small">VÍ DỤ</div>
+<p>• Phân tích vàng đa khung H1, M15, M5, M1.</p>
+<p>• Theo dõi XAUUSDm RSI M5 chạm 60 thì báo tôi.</p>
+<p>• Liệt kê nhiệm vụ đang chạy, dừng hoặc xóa nhiệm vụ #ID.</p>
 </div>
 
 <div class="panel">
 <div class="messages" id="messages">
-<div class="msg bot">AI Trading Assistant đã sẵn sàng. Hãy nhập yêu cầu bằng tiếng Việt.</div>
+<div class="msg bot">
+AI Trading Assistant sẵn sàng. Hãy hỏi phân tích thị trường hoặc yêu cầu theo dõi điều kiện RSI. AI dùng dữ liệu MT5 thực tế; phiên bản này không tự đặt lệnh.
+</div>
 </div>
 
 <div class="chatbox">
-<input id="prompt" placeholder="Ví dụ: Phân tích vàng đa khung thời gian..." onkeydown="if(event.key==='Enter')send()">
-<button id="sendBtn" onclick="send()">Gửi</button>
+<input id="prompt" placeholder="Nhập yêu cầu bằng tiếng Việt..." onkeydown="if(event.key==='Enter')send()">
+<button onclick="send()">Gửi</button>
 </div>
-<div class="footerhint">AI chạy qua Ollama trên máy Bridge. Chế độ hiện tại chỉ phân tích và cảnh báo, không tự giao dịch.</div>
+
+<div class="footerhint">
+AI chạy qua Ollama trên máy Bridge. Máy tính phải bật MT5, Bridge và Tunnel để theo dõi.
+</div>
 </div>
 
 <div class="panel">
 <h3>📈 Phân tích thị trường</h3>
+
 <div class="symbolrow">
 <select id="aiSymbol">
 <option>XAUUSDm</option>
@@ -161,15 +169,16 @@ button.danger{background:#7f2630}
 <option>D1</option>
 </select>
 
-<button onclick="analyzeMarket()">AI phân tích</button>
+<button onclick="analyzeMarket()">Phân tích</button>
 </div>
 
 <div id="analysisResult" class="analysisout small" style="margin-top:14px">
-Chọn mã và khung thời gian, sau đó bấm AI phân tích.
+Chọn mã và khung thời gian rồi bấm Phân tích.
 </div>
 </div>
 </section>
 
+<!-- NHIỆM VỤ -->
 <section id="tasks" class="content page hidden">
 <h2>Nhiệm vụ</h2>
 <div class="panel">
@@ -181,6 +190,7 @@ Chọn mã và khung thời gian, sau đó bấm AI phân tích.
 </div>
 </section>
 
+<!-- THÔNG BÁO -->
 <section id="alerts" class="content page hidden">
 <h2>Thông báo</h2>
 <div class="panel">
@@ -192,68 +202,92 @@ Chọn mã và khung thời gian, sau đó bấm AI phân tích.
 </div>
 </section>
 
+<!-- CÀI ĐẶT -->
 <section id="settings" class="content page hidden">
-<h2>Cài đặt</h2>
+<h2>Cài đặt kết nối MT5 & AI</h2>
+
 <div class="panel">
 <div class="field">
-<label>Cloudflare Tunnel URL</label>
+<label>Tunnel URL (Cloudflare Tunnel)</label>
 <input id="tunnel" placeholder="https://your-tunnel.trycloudflare.com">
 </div>
+
 <div class="field">
 <label>Bridge Token</label>
-<input id="token" type="password" placeholder="Dán token trong bridge_token.txt">
+<input id="token" type="password" placeholder="Token trong bridge_token.txt">
 </div>
+
 <div class="field">
-<label>Ollama Model</label>
-<input id="model" placeholder="qwen3.5:4b">
+<label>Ollama model</label>
+<input id="model" value="qwen3.5:4b">
 </div>
+
 <div class="row">
 <button onclick="saveSettings()">Lưu cấu hình</button>
-<button class="secondary" onclick="testConnection()">Kiểm tra MT5</button>
+<button class="secondary" onclick="testConnection()">Kết nối / Kiểm tra MT5</button>
 </div>
+
 <div id="connectionDetails" class="small" style="margin-top:12px"></div>
 </div>
 
 <div class="panel">
 <h3>Thông tin</h3>
-<p class="small">MT5 Bridge và Ollama phải chạy trên máy Windows. Website chỉ phân tích và cảnh báo, không có chức năng đặt lệnh.</p>
+<p class="small">
+Bridge chạy trên Windows có MT5. Ollama chạy local.
+Khi máy hoặc Bridge dừng, nhiệm vụ không theo dõi được.
+Chức năng đặt lệnh tự động đã bị loại bỏ.
+</p>
 </div>
 </section>
+
 </main>
-</div>
 </div>
 
 <div id="toast" class="toast"></div>
 
 <script>
 const $=id=>document.getElementById(id);
-
-let tasks=[],alerts=[],notifEnabled=false,pollBusy=false;
+let tasks=[],alerts=[],notifEnabled=false,pollTimer=null,sendBusy=false;
 
 function settings(){
 return {
- url:localStorage.getItem('bridgeUrl')||'',
- token:localStorage.getItem('bridgeToken')||'',
- model:localStorage.getItem('ollamaModel')||'qwen3.5:4b'
+url:localStorage.getItem('bridgeUrl')||'',
+token:localStorage.getItem('bridgeToken')||'',
+model:localStorage.getItem('ollamaModel')||'qwen3.5:4b'
 };
 }
-function base(){return settings().url.trim().replace(/\/+$/,'');}
-function headers(){return {'Content-Type':'application/json','X-Bridge-Token':settings().token};}
+
+function base(){
+return settings().url.trim().replace(/\/+$/,'');
+}
+
+function headers(){
+return {
+'Content-Type':'application/json',
+'X-Bridge-Token':settings().token
+};
+}
 
 function toast(msg){
 $('toast').textContent=msg;
 $('toast').style.display='block';
 clearTimeout(toast.timer);
-toast.timer=setTimeout(()=>$('toast').style.display='none',4000);
+toast.timer=setTimeout(()=> $('toast').style.display='none',4000);
 }
 
 function showPage(id,btn){
 document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
 $(id).classList.remove('hidden');
-$('pageTitle').textContent=({assistant:'Trợ lý giao dịch',tasks:'Nhiệm vụ',alerts:'Thông báo',settings:'Cài đặt'})[id]||id;
+
+$('pageTitle').textContent={
+assistant:'Trợ lý giao dịch',
+tasks:'Nhiệm vụ',
+alerts:'Thông báo',
+settings:'Cài đặt'
+}[id]||id;
+
 document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
 if(btn)btn.classList.add('active');
-if(id==='tasks')refreshTasks();
 }
 
 function saveSettings(){
@@ -264,191 +298,295 @@ toast('Đã lưu cấu hình');
 }
 
 async function api(path,opt={}){
-if(!base()||!settings().token)throw new Error('Nhập Tunnel URL và Bridge Token trong Cài đặt.');
-const res=await fetch(base()+path,{...opt,headers:{...headers(),...(opt.headers||{})}});
-const data=await res.json().catch(()=>({detail:'Phản hồi không hợp lệ'}));
-if(!res.ok)throw new Error(data.detail||('HTTP '+res.status));
+if(!base()||!settings().token)
+throw new Error('Nhập Tunnel URL và Bridge Token trong Cài đặt.');
+
+let res=await fetch(base()+path,{
+...opt,
+headers:{...headers(),...(opt.headers||{})}
+});
+
+let data=await res.json().catch(()=>({detail:'Phản hồi API không hợp lệ'}));
+
+if(!res.ok)throw new Error(data.detail||`HTTP ${res.status}`);
 return data;
 }
 
 async function testConnection(){
 saveSettings();
+
 try{
-const d=await api('/api/status');
-$('connection').textContent=d.connected?'🟢 MT5 đã kết nối':'🟠 Bridge phản hồi, MT5 chưa sẵn sàng';
-$('accountline').textContent=d.account?`${d.account.server} · ${d.account.currency}`:(d.error||'Bridge đã phản hồi');
-$('connectionDetails').textContent=d.account?`Server: ${d.account.server} | Balance: ${d.account.balance} | Equity: ${d.account.equity}`:(d.error||'Bridge đang hoạt động');
+let d=await api('/api/status');
+
+$('connection').textContent=d.connected
+?'🟢 MT5 đã kết nối'
+:'🟠 Bridge có phản hồi, MT5 chưa sẵn sàng';
+
+$('accountline').textContent=d.account
+?`Tài khoản ${d.account.login} · ${d.account.server} · ${d.account.currency}`
+:(d.error||'Bridge phản hồi');
+
+$('connectionDetails').textContent=d.account
+?`Server: ${d.account.server} | Balance: ${d.account.balance} | Equity: ${d.account.equity}`
+:(d.error||'Bridge hoạt động');
+
 await refreshTasks();
-toast(d.connected?'MT5 kết nối thành công':'Bridge phản hồi');
+
+toast(d.connected?'Kết nối MT5 thành công':'Bridge phản hồi');
 }catch(e){
-$('connection').textContent='🔴 Không kết nối được';
+$('connection').textContent='🔴 Lỗi kết nối';
 $('accountline').textContent=e.message;
 $('connectionDetails').textContent=e.message;
 toast(e.message);
 }
 }
 
+function timeframeFrom(text){
+return (text.match(/\b(M1|M5|M15|M30|H1|H4|D1)\b/i)||[])[1]?.toUpperCase()||'M5';
+}
+
+function symbolFrom(text){
+let s=(text.match(/\b(XAUUSDm|XAUUSD|XAU|GOLD|BTCUSDm|BTCUSD|BTC|USDJPYm|USDJPY|EURUSD|GBPUSD)\b/i)||[])[1];
+if(!s)return null;
+
+const map={
+XAU:'XAUUSDm',
+GOLD:'XAUUSDm',
+XAUUSD:'XAUUSDm',
+XAUUSDM:'XAUUSDm',
+BTC:'BTCUSDm',
+BTCUSD:'BTCUSDm',
+BTCUSDM:'BTCUSDm',
+USDJPY:'USDJPYm'
+};
+
+return map[s.toUpperCase()]||s;
+}
+
 function addMsg(text,who='bot'){
-const d=document.createElement('div');
-d.className='msg '+who;
+let d=document.createElement('div');
+d.className='msg '+(who==='user'?'user':'bot');
 d.textContent=text;
 $('messages').appendChild(d);
 $('messages').scrollTop=$('messages').scrollHeight;
 }
 
 function esc(s){
-return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+return String(s??'').replace(/[&<>"']/g,c=>({
+'&':'&amp;',
+'<':'&lt;',
+'>':'&gt;',
+'"':'&quot;',
+"'":'&#39;'
+}[c])));
 }
 
-function symbolFrom(text){
-const s=(text.match(/\b(XAUUSDm|XAUUSD|XAU|GOLD|BTCUSDm|BTCUSD|BTC|USDJPYm|USDJPY|EURUSD|GBPUSD)\b/i)||[])[1];
-if(!s)return null;
-const map={XAU:'XAUUSDm',GOLD:'XAUUSDm',XAUUSD:'XAUUSDm',XAUUSDM:'XAUUSDm',BTC:'BTCUSDm',BTCUSD:'BTCUSDm,BTCUSDM:'BTCUSDm',USDJPY:'USDJPYm'};
-return map[s.toUpperCase()]||s;
+function parseJsonText(s){
+let txt=String(s||'').trim()
+.replace(/^```(?:json)?\s*/i,'')
+.replace(/\s*```$/,'');
+
+try{return JSON.parse(txt)}
+catch{
+let a=txt.indexOf('{'),b=txt.lastIndexOf('}');
+if(a>=0&&b>a){
+try{return JSON.parse(txt.slice(a,b+1))}
+catch{}
+}
+return null;
+}
 }
 
-function timeframeFrom(text){
-return (text.match(/\b(M1|M5|M15|M30|H1|H4|D1)\b/i)||[])[1]?.toUpperCase()||'M5';
-}
-
-async function ollama(prompt,system=''){
-const data=await api('/api/ai',{
+async function aiRequest(system,prompt){
+let d=await api('/api/ai',{
 method:'POST',
-body:JSON.stringify({prompt,system,model:settings().model})
+body:JSON.stringify({
+system,
+prompt,
+model:settings().model
+})
 });
-return data.response||data.message||'AI không trả về nội dung.';
+return d.response||'';
 }
+
+const AI_SYSTEM=`
+Bạn là AI Trading Assistant nói tiếng Việt, ngắn gọn nhưng hữu ích.
+
+Không được bịa giá hoặc dữ liệu thị trường.
+Dữ liệu MT5 được cung cấp là nguồn sự thật.
+Bạn không đặt lệnh.
+
+Nếu người dùng hỏi theo dõi RSI:
+chỉ tạo nhiệm vụ RSI đơn khung với điều kiện cross/above/below.
+
+Nếu yêu cầu không hỗ trợ, nói rõ.
+Với câu chat thông thường, trả lời tự nhiên.
+
+Khi cần hành động, trả về JSON duy nhất theo schema:
+
+{
+ "action":"chat|create_task|list_tasks|analyze_market|stop_task|resume_task|delete_task",
+ "reply":"",
+ "task":{
+  "symbol":"XAUUSDm",
+  "timeframe":"M5",
+  "period":14,
+  "level":60,
+  "condition":"cross|above|below",
+  "note":""
+ },
+ "task_id":1
+}
+
+Dùng action phù hợp.
+task_id phải là ID người dùng cung cấp hoặc lấy từ danh sách nhiệm vụ.
+Không tự đoán ID.
+`;
 
 async function send(){
-const input=$('prompt'),text=input.value.trim();
+if(sendBusy)return;
+
+let input=$('prompt');
+let text=input.value.trim();
 if(!text)return;
+
 input.value='';
 addMsg(text,'user');
-$('sendBtn').disabled=true;
+sendBusy=true;
 
 try{
-const taskData=await api('/api/tasks');
-const taskList=taskData.tasks||[];
+let taskData=await api('/api/tasks').catch(()=>({tasks:[]}));
 
-const system=`Bạn là AI Trading Assistant chuyên phân tích và quản lý theo dõi thị trường.
-Bạn có thể chọn action:
-chat, create_task, list_tasks, analyze_market, stop_task, resume_task, delete_task.
-Trả về DUY NHẤT JSON hợp lệ, không Markdown:
-{"action":"chat","reply":"...","task":null}
-Nếu tạo task RSI:
-{"action":"create_task","reply":"Giải thích ngắn","task":{"symbol":"XAUUSDm","timeframe":"M5","indicator":"RSI","period":14,"level":30,"condition":"below","note":"..."}}
-condition chỉ được cross, above, below.
-Nếu phân tích thị trường: {"action":"analyze_market","reply":"...","symbol":"XAUUSDm","timeframe":"M15"}
-Nếu liệt kê: {"action":"list_tasks","reply":"..."}
-Nếu quản lý task: {"action":"stop_task","reply":"...","task_id":"ID"}
-Dùng resume_task hoặc delete_task tương tự.
-Nếu yêu cầu không rõ, chọn chat và hỏi lại.
-Task hiện có: ${JSON.stringify(taskList)}
-Không được giả vờ đã tạo task nếu chưa có API xác nhận.
-Không được đưa lệnh giao dịch hoặc tự đặt lệnh.`;
+let prompt=`
+Yêu cầu người dùng: ${text}
 
-const raw=await ollama(text,system);
-let obj;
-try{obj=JSON.parse(raw);}catch{
-addMsg(raw);
+Danh sách nhiệm vụ hiện tại:
+${JSON.stringify(taskData.tasks||[])}
+
+Hãy chọn action.
+
+Nếu phân tích thị trường:
+dùng action analyze_market.
+
+Nếu tạo RSI task:
+trả task đầy đủ.
+
+Nếu yêu cầu liệt kê:
+trả list_tasks.
+
+Nếu yêu cầu dừng/chạy/xóa:
+xác định ID từ danh sách hoặc câu người dùng.
+`;
+
+let raw=await aiRequest(AI_SYSTEM,prompt);
+let obj=parseJsonText(raw);
+
+if(!obj){
+addMsg(raw||'AI trả về rỗng hoặc không đúng định dạng.');
 return;
 }
 
-if(obj.action==='create_task'&&obj.task){
-const created=await api('/api/tasks',{method:'POST',body:JSON.stringify(obj.task)});
-addMsg((obj.reply||'Đã tạo nhiệm vụ.')+`\n\nTask ID: ${created.id}\n${created.symbol} · RSI(${created.period}) · ${created.timeframe} · ${created.condition} ${created.level}`);
-await refreshTasks();
-return;
-}
-
-if(obj.action==='list_tasks'){
-await refreshTasks();
-addMsg(obj.reply||`Hiện có ${tasks.length} nhiệm vụ.`);
-return;
-}
-
-if(['stop_task','resume_task','delete_task'].includes(obj.action)&&obj.task_id){
-let endpoint='/api/tasks/'+encodeURIComponent(obj.task_id);
-if(obj.action==='delete_task')await api(endpoint,{method:'DELETE'});
-else await api(endpoint+'/'+(obj.action==='stop_task'?'stop':'resume'),{method:'POST'});
-await refreshTasks();
-addMsg(obj.reply||'Đã thực hiện yêu cầu.');
-return;
-}
-
-if(obj.action==='analyze_market'){
-const sym=symbolFrom(obj.symbol||text)||'XAUUSDm';
-const tf=obj.timeframe||timeframeFrom(text);
-await analyzeMarket(sym,tf);
-return;
-}
-
-addMsg(obj.reply||raw);
-
+await handleAIAction(obj,text,taskData.tasks||[]);
 }catch(e){
-addMsg('Lỗi AI: '+e.message);
+addMsg('Lỗi AI/Bridge: '+e.message);
 }finally{
-$('sendBtn').disabled=false;
+sendBusy=false;
 }
 }
 
-function ema(values,period){
-if(values.length<period)return null;
-const k=2/(period+1);
-let v=values.slice(0,period).reduce((a,b)=>a+b,0)/period;
-for(let i=period;i<values.length;i++)v=values[i]*k+v*(1-k);
-return v;
-}
+async function handleAIAction(o,userText,currentTasks){
+let reply=o.reply||'';
 
-function calcRSI(values,period=14){
-if(values.length<period+1)return null;
-let gain=0,loss=0;
-for(let i=1;i<=period;i++){const d=values[i]-values[i-1];gain+=Math.max(d,0);loss+=Math.max(-d,0);}
-gain/=period;loss/=period;
-for(let i=period+1;i<values.length;i++){const d=values[i]-values[i-1];gain=(gain*(period-1)+Math.max(d,0))/period;loss=(loss*(period-1)+Math.max(-d,0))/period;}
-return loss===0?100:100-100/(1+gain/loss);
-}
+switch(o.action){
 
-async function fetchTF(symbol,tf){
-return api('/api/market?symbol='+encodeURIComponent(symbol)+'&timeframe='+tf+'&bars=200');
-}
+case'create_task':{
+let t=o.task||{};
+let symbol=t.symbol||symbolFrom(userText);
+let tf=t.timeframe||timeframeFrom(userText);
 
-async function analyzeMarket(symbol=$('aiSymbol').value,tf=$('aiTf').value){
-const out=$('analysisResult');
-out.textContent='Đang lấy dữ liệu MT5 và phân tích AI...';
-try{
-const frames=['H1','M15','M5','M1'];
-const datasets={};
-for(const frame of frames){
-const m=await fetchTF(symbol,frame);
-const bars=m.bars||[];
-const closes=bars.map(b=>b.close);
-const last=bars[bars.length-1];
-datasets[frame]={
-price:last.close,
-open:last.open,
-high:last.high,
-low:last.low,
-time:last.time,
-EMA20:ema(closes,20),
-EMA50:ema(closes,50),
-RSI14:calcRSI(closes,14),
-last_candle:last
+if(!symbol)throw new Error('AI chưa xác định được mã giao dịch.');
+
+let payload={
+symbol,
+timeframe:tf,
+indicator:'RSI',
+period:Number(t.period)||14,
+level:Number(t.level),
+condition:['cross','above','below'].includes(t.condition)?t.condition:'cross',
+note:t.note||userText
 };
+
+if(!Number.isFinite(payload.level)||payload.level<0||payload.level>100)
+throw new Error('Mức RSI không hợp lệ.');
+
+let created=await api('/api/tasks',{
+method:'POST',
+body:JSON.stringify(payload)
+});
+
+addMsg(reply||`Đã tạo nhiệm vụ #${created.id}: ${created.symbol} RSI(${created.period}) ${created.timeframe} ${created.condition} ${created.level}.`);
+
+await refreshTasks();
+break;
 }
-const prompt=`Phân tích ${symbol} dựa hoàn toàn trên dữ liệu nến MT5 sau. Phân tích đa khung H1, M15, M5, M1. Xác định xu hướng, đồng thuận/không đồng thuận, động lượng, vùng cần chú ý, kịch bản BUY/SELL và điều kiện cần chờ xác nhận. Không tự bịa dữ liệu. Nếu chưa đủ điều kiện thì nói rõ đứng ngoài.\n${JSON.stringify(datasets,null,2)}`;
-const answer=await ollama(prompt,'Bạn là chuyên gia phân tích Price Action và chỉ báo kỹ thuật. Trả lời tiếng Việt rõ ràng, ngắn gọn, phân biệt dữ liệu và nhận định. Không cam kết lợi nhuận.');
-out.textContent=answer;
-addMsg('📊 Phân tích '+symbol+'\n\n'+answer);
-}catch(e){
-out.textContent='Không phân tích được: '+e.message;
-addMsg('Không phân tích được: '+e.message);
+
+case'list_tasks':
+await refreshTasks();
+addMsg(reply||'Đã làm mới danh sách nhiệm vụ. Mở tab Nhiệm vụ để xem.');
+break;
+
+case'analyze_market':{
+let symbol=o.symbol||symbolFrom(userText)||$('aiSymbol').value;
+let tf=o.timeframe||timeframeFrom(userText);
+
+if(!['M1','M5','M15','M30','H1','H4','D1'].includes(tf))
+tf='M15';
+
+$('aiSymbol').value=symbol;
+$('aiTf').value=tf;
+
+await analyzeMarket(symbol,tf,userText);
+break;
+}
+
+case'stop_task':
+case'resume_task':
+case'delete_task':{
+
+let id=Number(o.task_id);
+
+if(!id){
+let m=userText.match(/(?:#|nhiệm vụ\s*)(\d+)/i);
+if(m)id=Number(m[1]);
+}
+
+if(!id)throw new Error('Không xác định được ID nhiệm vụ.');
+
+let action=o.action==='stop_task'
+?'stop'
+:o.action==='resume_task'
+?'resume'
+:'delete';
+
+if(action==='delete')
+await api('/api/tasks/'+id,{method:'DELETE'});
+else
+await api('/api/tasks/'+id+'/'+action,{method:'POST'});
+
+addMsg(reply||`Đã ${action==='stop'?'dừng':action==='resume'?'chạy lại':'xóa'} nhiệm vụ #${id}.`);
+
+await refreshTasks();
+break;
+}
+
+default:
+addMsg(reply||'AI chưa có phản hồi.');
 }
 }
 
 async function refreshTasks(){
 try{
-const data=await api('/api/tasks');
+let data=await api('/api/tasks');
 tasks=data.tasks||[];
 renderTasks();
 }catch(e){
@@ -457,69 +595,254 @@ $('taskList').innerHTML='<div class="small">'+esc(e.message)+'</div>';
 }
 
 function renderTasks(){
-const active=tasks.filter(t=>t.active).length;
+let active=tasks.filter(t=>t.active).length;
+
 $('count').textContent=active+' nhiệm vụ';
 $('taskSummary').textContent=`${active} đang chạy · ${tasks.length} tổng`;
-if(!tasks.length){$('taskList').innerHTML='<p class="small">Chưa có nhiệm vụ.</p>';return;}
+
+if(!tasks.length){
+$('taskList').innerHTML='<p class="small">Chưa có nhiệm vụ nào.</p>';
+return;
+}
+
 $('taskList').innerHTML='';
+
 tasks.slice().reverse().forEach(t=>{
-const div=document.createElement('div');div.className='task';
-const info=document.createElement('div');
-info.innerHTML=`<div class="tasktitle">${esc(t.symbol)} · RSI(${t.period}) ${esc(t.timeframe)} ${esc(t.condition)} ${t.level}</div>
-<div class="small" style="margin-top:6px">Giá trị: ${t.last_value==null?'—':Number(t.last_value).toFixed(2)} ${t.last_error?' · '+esc(t.last_error):''}</div>
-<div style="margin-top:7px"><span class="tag">${t.active?'Đang chạy':t.triggered_at?'Đã kích hoạt':'Đã dừng'}</span></div>
-${t.trigger_message?`<p>${esc(t.trigger_message)}</p>`:''}`;
-const actions=document.createElement('div');actions.className='taskactions';
-const btn=document.createElement('button');btn.className='secondary';btn.textContent=t.active?'Dừng':'Chạy lại';
-btn.onclick=()=>taskAction(t.id,t.active?'stop':'resume');actions.append(btn);
-const del=document.createElement('button');del.className='danger';del.textContent='Xóa';del.onclick=()=>taskAction(t.id,'delete');actions.append(del);
-div.append(info,actions);$('taskList').append(div);
+let div=document.createElement('div');
+div.className='task';
+
+let info=document.createElement('div');
+
+info.innerHTML=`
+<div>
+<b>${esc(t.symbol)} · RSI(${t.period}) ${esc(t.timeframe)}
+${esc(t.condition)} ${t.level}</b>
+</div>
+
+<div class="small" style="margin-top:6px">
+RSI hiện tại: ${t.last_value==null?'—':Number(t.last_value).toFixed(2)}
+${t.last_error?' · '+esc(t.last_error):''}
+</div>
+
+<div style="margin-top:7px">
+<span class="tag">
+${t.active?'Đang chạy':t.triggered_at?'Đã kích hoạt':'Đã dừng'}
+</span>
+</div>
+
+${t.trigger_message?`<p>${esc(t.trigger_message)}</p>`:''}
+`;
+
+let actions=document.createElement('div');
+actions.className='taskactions';
+
+if(t.active){
+let b=document.createElement('button');
+b.className='secondary';
+b.textContent='Dừng';
+b.onclick=()=>taskAction(t.id,'stop');
+actions.append(b);
+}else{
+let b=document.createElement('button');
+b.className='secondary';
+b.textContent='Chạy lại';
+b.onclick=()=>taskAction(t.id,'resume');
+actions.append(b);
+}
+
+let del=document.createElement('button');
+del.className='danger';
+del.textContent='Xóa';
+del.onclick=()=>taskAction(t.id,'delete');
+actions.append(del);
+
+div.append(info,actions);
+$('taskList').append(div);
 });
 }
 
 async function taskAction(id,action){
 try{
-if(action==='delete')await api('/api/tasks/'+id,{method:'DELETE'});
-else await api('/api/tasks/'+id+'/'+action,{method:'POST'});
+if(action==='delete')
+await api('/api/tasks/'+id,{method:'DELETE'});
+else
+await api('/api/tasks/'+id+'/'+action,{method:'POST'});
+
 await refreshTasks();
-}catch(e){toast(e.message);}
+}catch(e){
+toast(e.message);
+}
 }
 
 async function enableNotifications(){
-if(!('Notification'in window)){toast('Trình duyệt không hỗ trợ thông báo');return;}
-const p=await Notification.requestPermission();
+if(!('Notification'in window)){
+toast('Trình duyệt không hỗ trợ thông báo');
+return;
+}
+
+let p=await Notification.requestPermission();
 notifEnabled=p==='granted';
-$('notifyState').textContent=notifEnabled?'Đã bật thông báo':'Chưa cấp quyền';
-toast(notifEnabled?'Đã bật thông báo':'Chưa cấp quyền');
+
+$('notifyState').textContent=notifEnabled
+?'Đã bật thông báo'
+:'Chưa cấp quyền thông báo';
+
+toast(notifEnabled?'Đã bật thông báo':'Chưa cấp quyền thông báo');
 }
 
 function showAlert(t){
 alerts.unshift(t);
-const msg=t.trigger_message||`${t.symbol} RSI đã kích hoạt`;
-if(notifEnabled&&Notification.permission==='granted')new Notification('AI Trading Assistant',{body:msg});
-$('alertList').innerHTML=alerts.map(a=>`<div class="task"><div>${esc(a.trigger_message||a.symbol+' RSI kích hoạt')}<div class="small">${a.triggered_at?new Date(a.triggered_at).toLocaleString():''}</div></div></div>`).join('');
+
+let msg=t.trigger_message||`${t.symbol} RSI đạt điều kiện`;
+
+if(notifEnabled&&Notification.permission==='granted')
+new Notification('AI Trading Assistant',{body:msg});
+
+$('alertList').innerHTML=alerts.map(a=>`
+<div class="task">
+<div>
+${esc(a.trigger_message||a.symbol+' RSI đã kích hoạt')}
+<div class="small">
+${a.triggered_at?new Date(a.triggered_at).toLocaleString():''}
+</div>
+</div>
+</div>
+`).join('');
 }
 
 async function poll(){
-if(pollBusy||!base()||!settings().token)return;
-pollBusy=true;
+if(!base()||!settings().token)return;
+
 try{
-const d=await api('/api/tasks');
-const fresh=d.tasks||[];
+let d=await api('/api/tasks');
+let fresh=d.tasks||[];
+
 fresh.forEach(t=>{
-const old=tasks.find(x=>x.id===t.id);
-if(t.triggered_at&&(!old||!old.triggered_at))showAlert(t);
+let old=tasks.find(x=>x.id===t.id);
+
+if(t.triggered_at&&(!old||!old.triggered_at)){
+showAlert(t);
+toast(t.trigger_message||'Nhiệm vụ kích hoạt');
+}
 });
-tasks=fresh;renderTasks();
-}catch{}finally{pollBusy=false;}
+
+tasks=fresh;
+renderTasks();
+}catch{}
+}
+
+function ema(values,period){
+if(values.length<period)return null;
+
+let k=2/(period+1);
+let v=values.slice(0,period).reduce((a,b)=>a+b,0)/period;
+
+for(let i=period;i<values.length;i++)
+v=values[i]*k+v*(1-k);
+
+return v;
+}
+
+function calcRSI(values,period=14){
+if(values.length<period+1)return null;
+
+let gain=0,loss=0;
+
+for(let i=1;i<=period;i++){
+let d=values[i]-values[i-1];
+gain+=Math.max(d,0);
+loss+=Math.max(-d,0);
+}
+
+gain/=period;
+loss/=period;
+
+for(let i=period+1;i<values.length;i++){
+let d=values[i]-values[i-1];
+gain=(gain*(period-1)+Math.max(d,0))/period;
+loss=(loss*(period-1)+Math.max(-d,0))/period;
+}
+
+return loss===0?100:100-100/(1+gain/loss);
+}
+
+async function analyzeMarket(symbol=$('aiSymbol').value,tf=$('aiTf').value,question=''){
+let out=$('analysisResult');
+out.textContent='Đang lấy dữ liệu MT5 và gửi cho AI...';
+
+try{
+let m=await api(
+'/api/market?symbol='+encodeURIComponent(symbol)+
+'&timeframe='+encodeURIComponent(tf)+
+'&bars=200'
+);
+
+let bars=m.bars;
+
+if(!bars||bars.length<55)
+throw new Error('MT5 trả về không đủ nến');
+
+let closes=bars.map(x=>x.close);
+let last=bars[bars.length-1];
+let e20=ema(closes,20);
+let e50=ema(closes,50);
+let rsi=calcRSI(closes,14);
+
+let summary={
+symbol,
+timeframe:tf,
+bar_count:bars.length,
+last_bar:last,
+ema20:e20,
+ema50:e50,
+rsi14:rsi,
+trend:
+last.close>e20&&e20>e50
+?'bullish'
+:last.close<e20&&e20<e50
+?'bearish'
+:'sideways',
+recent_bars:bars.slice(-30)
+};
+
+let prompt=`
+Người dùng hỏi: ${question||'Phân tích thị trường'}
+
+Dữ liệu MT5:
+${JSON.stringify(summary)}
+
+Phân tích xu hướng, động lượng, vùng giá gần,
+cấu trúc nến và kịch bản BUY/SELL/đứng ngoài.
+
+Chỉ nêu mức giá nếu suy ra trực tiếp từ dữ liệu nến.
+Nêu rõ điều kiện xác nhận và điểm vô hiệu nếu có.
+Không khẳng định chắc chắn.
+Trả lời bằng tiếng Việt.
+`;
+
+let response=await aiRequest(
+'Bạn là chuyên gia phân tích thị trường, không đặt lệnh. Dùng dữ liệu được cung cấp, không bịa số. Phân tích rõ ràng, súc tích và có kịch bản.',
+prompt
+);
+
+out.textContent=response;
+addMsg(response);
+
+}catch(e){
+out.textContent='Không phân tích được: '+e.message;
+addMsg('Không phân tích được: '+e.message);
+}
 }
 
 window.addEventListener('load',()=>{
 $('tunnel').value=settings().url;
 $('token').value=settings().token;
 $('model').value=settings().model;
-setInterval(poll,5000);
-if(settings().url&&settings().token)testConnection();
+
+pollTimer=setInterval(poll,5000);
+
+if(settings().url&&settings().token)
+testConnection();
 });
 </script>
 </body>
