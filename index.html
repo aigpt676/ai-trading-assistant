@@ -378,7 +378,7 @@ return String(s??'').replace(/[&<>"']/g,c=>({
 '>':'&gt;',
 '"':'&quot;',
 "'":'&#39;'
-}[c])));
+}[c]));
 }
 
 function parseJsonText(s){
@@ -553,11 +553,11 @@ case'stop_task':
 case'resume_task':
 case'delete_task':{
 
-let id=Number(o.task_id);
+let id=o.task_id!=null?String(o.task_id):'';
 
 if(!id){
-let m=userText.match(/(?:#|nhiệm vụ\s*)(\d+)/i);
-if(m)id=Number(m[1]);
+let m=userText.match(/(?:#|nhiệm vụ\s*)([a-f0-9]+)/i);
+if(m)id=m[1];
 }
 
 if(!id)throw new Error('Không xác định được ID nhiệm vụ.');
@@ -693,7 +693,7 @@ toast(notifEnabled?'Đã bật thông báo':'Chưa cấp quyền thông báo');
 function showAlert(t){
 alerts.unshift(t);
 
-let msg=t.trigger_message||`${t.symbol} RSI đạt điều kiện`;
+let msg=t.triggerMessage||`${t.symbol} RSI đạt điều kiện`;
 
 if(notifEnabled&&Notification.permission==='granted')
 new Notification('AI Trading Assistant',{body:msg});
