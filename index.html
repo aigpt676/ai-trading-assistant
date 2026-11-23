@@ -1,383 +1,711 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1018">
 <title>AI Trading Assistant</title>
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#0b0e14;color:#e6edf7;font-family:Arial,sans-serif}
-.app{display:flex;height:100vh}
-.sidebar{width:290px;background:#111720;border-right:1px solid #263041;padding:18px;display:flex;flex-direction:column}
-.logo{font-size:22px;font-weight:bold;color:#65a9ff;margin-bottom:25px}
-.card{background:#192230;border:1px solid #283447;border-radius:13px;padding:15px;margin-bottom:12px}
-.label{font-size:12px;color:#8e9ab0;margin-bottom:8px}
-.status{font-size:16px;font-weight:bold}
-.green{color:#38d996}
-.red{color:#ff6868}
-.yellow{color:#ffc857}
-.menu{padding:12px;border-radius:9px;margin:5px 0;color:#b7c2d2}
-.menu.active{background:#1c2b40;color:#65a9ff}
-.main{flex:1;display:flex;flex-direction:column;min-width:0}
-.header{padding:20px;border-bottom:1px solid #263041;font-weight:bold}
-.content{flex:1;overflow:auto;padding:22px}
-h2{margin-top:0}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.metric{background:#192230;border:1px solid #283447;border-radius:12px;padding:18px}
-.metric .value{font-size:24px;font-weight:bold;margin-top:8px;overflow-wrap:anywhere}
-input,button{font:inherit}
-input{background:#0b0e14;color:#fff;border:1px solid #344155;border-radius:9px;padding:12px;width:100%;margin:6px 0}
-button{background:#2878ef;color:white;border:0;border-radius:9px;padding:12px 16px;cursor:pointer}
+body{margin:0;background:#0b0f15;color:#e7edf6;font:15px Arial,sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer;border:0;border-radius:9px;padding:10px 13px;background:#2563eb;color:#fff}
 button:hover{opacity:.88}
-.connection{margin-bottom:18px}
-.note{font-size:12px;color:#94a3b8;margin-top:8px}
-.chatbox{margin-top:22px;background:#192230;border:1px solid #283447;border-radius:12px;padding:18px}
-@media(max-width:800px){
-.sidebar{width:220px}
-.grid{grid-template-columns:repeat(2,1fr)}
+button.secondary{background:#202a38;border:1px solid #344254}
+button.danger{background:#7f2630}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:285px;background:#111923;border-right:1px solid #283344;padding:18px;display:flex;flex-direction:column;gap:12px}
+.brand{font-size:20px;font-weight:bold;color:#67a8ff;margin-bottom:12px}
+.card{background:#182230;border:1px solid #2b3a4d;border-radius:13px;padding:15px}
+.small{color:#91a7c1;font-size:12px}
+.status{font-size:16px;margin-top:8px}
+.nav button{display:block;width:100%;text-align:left;background:transparent;color:#b9c7d8;margin:4px 0}
+.nav button.active{background:#21334b;color:#80b8ff}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.top{height:68px;border-bottom:1px solid #263242;padding:18px 24px;display:flex;align-items:center;justify-content:space-between}
+.content{padding:24px;max-width:1400px;width:100%;margin:auto}
+.hero{text-align:center;padding:15px 0 20px}
+.hero h1{font-size:30px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.panel{background:#131c27;border:1px solid #293749;border-radius:14px;padding:18px;margin-bottom:16px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row>*{flex:1}
+.field{margin:10px 0}
+.field label{display:block;color:#9db0c7;font-size:13px;margin-bottom:6px}
+.field input,.field select{width:100%;background:#0c131d;color:#e8eef7;border:1px solid #344357;border-radius:9px;padding:11px}
+.chatbox{display:flex;gap:10px;margin-top:14px}
+.chatbox input{flex:1;background:#172231;border:1px solid #324156;border-radius:10px;padding:14px;color:#fff}
+.messages{display:flex;flex-direction:column;gap:10px;max-height:350px;overflow:auto}
+.msg{padding:12px;border-radius:12px;max-width:90%;white-space:pre-wrap;line-height:1.5}
+.msg.user{align-self:flex-end;background:#1e4f91}
+.msg.bot{background:#1a2432}
+.task{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border:1px solid #304053;border-radius:11px;padding:13px;margin:10px 0}
+.tasktitle{font-weight:bold}
+.tag{font-size:12px;padding:4px 8px;border-radius:30px;background:#25384d;color:#a9d0ff}
+.taskactions{display:flex;gap:5px;flex-wrap:wrap}
+.taskactions button{padding:7px 9px;font-size:12px}
+.hidden{display:none}
+.footerhint{color:#7f91a9;font-size:12px;margin-top:8px}
+.toast{position:fixed;right:20px;bottom:20px;background:#203147;border:1px solid #47607d;padding:14px 18px;border-radius:10px;display:none;max-width:350px;z-index:9}
+.metricgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.metric{background:#182230;border:1px solid #2b3a4d;border-radius:12px;padding:15px}
+.metric .value{font-size:21px;font-weight:bold;margin-top:7px;overflow-wrap:anywhere}
+.mobilemenu{display:none}
+.analysisout{white-space:pre-wrap;line-height:1.55}
+.symbolrow{display:flex;gap:10px;flex-wrap:wrap}
+.symbolrow select{flex:1;min-width:130px;background:#0c131d;color:#e8eef7;border:1px solid #344357;border-radius:9px;padding:11px}
+
+@media(max-width:1000px){
+.sidebar{width:230px}
+.metricgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.content{padding:15px}
 }
-@media(max-width:550px){
-.app{flex-direction:column}
-.sidebar{width:100%;height:auto;padding:12px}
-.logo{margin-bottom:12px}
-.sidebar .menu{display:none}
-.main{height:calc(100vh - 150px)}
-.grid{grid-template-columns:repeat(2,1fr)}
+@media(max-width:620px){
+.layout{display:block}
+.sidebar{width:100%;padding:12px;display:block}
+.brand{margin:0}
+.sidebar .card,.nav{display:none}
+.mobilemenu{display:block;margin-top:8px}
+.main{min-height:70vh}
+.top{padding:14px;height:55px}
 .content{padding:12px}
-.metric{padding:12px}
-.metric .value{font-size:20px}
+.task{display:block}
+.taskactions{margin-top:10px}
+.chatbox input{min-width:0}
+.metricgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.hero h1{font-size:24px}
 }
 </style>
 </head>
 
 <body>
-<div class="app">
+<div class="layout">
 
 <aside class="sidebar">
-  <div class="logo">🤖 AI Assistant</div>
+<div class="brand">🤖 AI Trading Assistant</div>
 
-  <div class="card">
-    <div class="label">KẾT NỐI THỊ TRƯỜNG</div>
-    <div class="status yellow" id="connectionStatus">🟡 Chưa kết nối</div>
-    <div class="note" id="connectionDetail">Đang chờ kết nối MT5</div>
-  </div>
+<div class="card">
+<div class="small">KẾT NỐI MT5</div>
+<div id="connection" class="status">🟠 Chưa kết nối</div>
+<div id="accountline" class="small">Nhập Tunnel URL và Token tại Cài đặt</div>
+</div>
 
-  <div class="card">
-    <div class="label">TÀI KHOẢN MT5</div>
-    <div id="loginInfo">Chưa có dữ liệu</div>
-  </div>
+<div class="card">
+<div class="small">NHIỆM VỤ ĐANG RUN</div>
+<div class="status" id="count">0 nhiệm vụ</div>
+</div>
 
-  <div class="menu active">💬 Trợ lý</div>
-  <div class="menu">📋 Nhiệm vụ</div>
-  <div class="menu">🔔 Thông báo</div>
+<div class="nav">
+<div class="small" style="margin:12px 0">MENU</div>
+<button class="active" onclick="showPage('assistant',this)">💬 Trợ lý</button>
+<button onclick="showPage('tasks',this)">📋 Nhiệm vụ</button>
+<button onclick="showPage('alerts',this)">🔔 Thông báo</button>
+<button onclick="showPage('settings',this)">⚙️ Cài đặt</button>
+</div>
+
+<div class="mobilemenu">
+<select onchange="showPage(this.value)">
+<option value="assistant">Trợ lý</option>
+<option value="tasks">Nhiệm vụ</option>
+<option value="alerts">Thông báo</option>
+<option value="settings">Cài đặt</option>
+</select>
+</div>
+
+<div class="small" style="margin-top:auto">AI Trading Assistant · MT5 Bridge</div>
 </aside>
 
 <main class="main">
-  <div class="header">Trợ lý giao dịch AI</div>
+<div class="top">
+<b id="pageTitle">Trợ lý giao dịch</b>
+<span class="small">Task Manager · MT5</span>
+</div>
 
-  <div class="content">
+<section id="assistant" class="content page">
+<div class="hero">
+<h1>Trợ lý giao dịch AI</h1>
+<div class="small">Giao nhiệm vụ bằng ngôn ngữ tự nhiên · Theo dõi dữ liệu MT5</div>
+</div>
 
-    <h2>Trạng thái MT5</h2>
+<div class="panel">
+<div class="small">VÍ DỤ</div>
+<p>• Theo dõi XAUUSD RSI M5 chạm 60 thì báo tôi.</p>
+<p>• Theo dõi BTCUSD RSI M15 vượt 70.</p>
+<p>• Phân tích XAUUSD M15.</p>
+<p>• Liệt kê nhiệm vụ đang chạy / Dừng nhiệm vụ #ID.</p>
+</div>
 
-    <div class="card connection">
-      <div class="label">CẤU HÌNH KẾT NỐI BRIDGE</div>
+<div class="panel">
+<div class="messages" id="messages">
+<div class="msg bot">Tôi đã kết nối giao diện với MT5 Bridge. Hãy yêu cầu phân tích thị trường hoặc tạo nhiệm vụ theo dõi RSI.</div>
+</div>
 
-      <label class="label">Cloudflare Tunnel URL</label>
-      <input id="bridgeUrl" placeholder="https://your-tunnel.trycloudflare.com">
+<div class="chatbox">
+<input id="prompt" placeholder="Nhập yêu cầu..." onkeydown="if(event.key==='Enter')send()">
+<button onclick="send()">Gửi</button>
+</div>
 
-      <label class="label">Bridge Token</label>
-      <input id="bridgeToken" type="password" placeholder="Nhập Bridge Token">
+<div class="footerhint">Theo dõi chạy trên máy đang bật Bridge. Phiên bản này chỉ phân tích/cảnh báo, không tự vào lệnh.</div>
+</div>
 
-      <button onclick="connectBridge()">Kết nối MT5</button>
-      <button onclick="disconnectBridge()" style="background:#384456;margin-left:5px">Ngắt</button>
+<div class="panel">
+<h3>📈 Phân tích thị trường</h3>
 
-      <div class="note">
-        Token được lưu trên trình duyệt hiện tại. Không đưa Token vào GitHub.
-      </div>
-    </div>
+<div class="symbolrow">
+<select id="aiSymbol">
+<option>XAUUSDm</option>
+<option>BTCUSDm</option>
+<option>USDJPYm</option>
+<option>EURUSD</option>
+<option>GBPUSD</option>
+</select>
 
-    <div class="grid">
-      <div class="metric">
-        <div class="label">Balance</div>
-        <div class="value" id="balance">--</div>
-      </div>
+<select id="aiTf">
+<option>M1</option>
+<option>M5</option>
+<option selected>M15</option>
+<option>M30</option>
+<option>H1</option>
+<option>H4</option>
+<option>D1</option>
+</select>
 
-      <div class="metric">
-        <div class="label">Equity</div>
-        <div class="value" id="equity">--</div>
-      </div>
+<button onclick="analyzeMarket()">Phân tích</button>
+</div>
 
-      <div class="metric">
-        <div class="label">Margin</div>
-        <div class="value" id="margin">--</div>
-      </div>
+<div id="analysisResult" class="analysisout small" style="margin-top:14px">
+Chọn mã và khung thời gian, sau đó bấm Phân tích.
+</div>
+</div>
+</section>
 
-      <div class="metric">
-        <div class="label">Free Margin</div>
-        <div class="value" id="freeMargin">--</div>
-      </div>
+<section id="tasks" class="content page hidden">
+<h2>Nhiệm vụ</h2>
+<div class="panel">
+<div class="row">
+<button class="secondary" onclick="refreshTasks()">Làm mới danh sách</button>
+<span id="taskSummary" class="small"></span>
+</div>
+<div id="taskList"></div>
+</div>
+</section>
 
-      <div class="metric">
-        <div class="label">Profit</div>
-        <div class="value" id="profit">--</div>
-      </div>
+<section id="alerts" class="content page hidden">
+<h2>Thông báo</h2>
+<div class="panel">
+<div class="row">
+<button onclick="enableNotifications()">Bật thông báo trình duyệt</button>
+<span id="notifyState" class="small">Chưa bật</span>
+</div>
+<div id="alertList"></div>
+</div>
+</section>
 
-      <div class="metric">
-        <div class="label">Tài khoản</div>
-        <div class="value" id="account">--</div>
-      </div>
+<section id="settings" class="content page hidden">
+<h2>Cài đặt kết nối MT5</h2>
 
-      <div class="metric">
-        <div class="label">Server</div>
-        <div class="value" id="server">--</div>
-      </div>
+<div class="panel">
+<div class="field">
+<label>Tunnel URL (Cloudflare Tunnel)</label>
+<input id="tunnel" placeholder="https://your-tunnel.trycloudflare.com">
+</div>
 
-      <div class="metric">
-        <div class="label">Trade Allowed</div>
-        <div class="value" id="tradeAllowed">--</div>
-      </div>
-    </div>
+<div class="field">
+<label>Bridge Token (trong bridge_token.txt)</label>
+<input id="token" type="password" placeholder="Dán token">
+</div>
 
-    <div class="chatbox">
-      <h3>🤖 Trợ lý giao dịch</h3>
-      <p>MT5 Bridge đã được tích hợp vào giao diện.</p>
-      <p id="lastUpdate" class="note">Chưa nhận dữ liệu.</p>
-    </div>
+<div class="row">
+<button onclick="saveSettings()">Lưu cấu hình</button>
+<button class="secondary" onclick="testConnection()">Kết nối / Kiểm tra MT5</button>
+</div>
 
-  </div>
+<div id="connectionDetails" class="small" style="margin-top:12px"></div>
+</div>
+
+<div class="panel">
+<h3>Thông tin</h3>
+<p class="small">Bridge chạy trên máy Windows có MT5. Khi máy tắt hoặc Bridge dừng, nhiệm vụ không thể theo dõi. Không có chức năng đặt lệnh trong phiên bản này.</p>
+</div>
+</section>
 </main>
 </div>
 
+<div id="toast" class="toast"></div>
+
 <script>
-const DEFAULT_URL = "";
+const $ = id => document.getElementById(id);
+let tasks = [], alerts = [], notifEnabled = false, pollHandle = null;
 
-const urlInput = document.getElementById("bridgeUrl");
-const tokenInput = document.getElementById("bridgeToken");
-
-urlInput.value = localStorage.getItem("bridge_url") || DEFAULT_URL;
-tokenInput.value = localStorage.getItem("bridge_token") || "";
-
-let pollTimer = null;
-let isConnecting = false;
-
-function setStatus(text, color, detail){
-  const el = document.getElementById("connectionStatus");
-  el.textContent = text;
-  el.className = "status " + color;
-
-  document.getElementById("connectionDetail").textContent = detail || "";
+function settings(){
+return {
+url:localStorage.getItem('bridgeUrl')||'',
+token:localStorage.getItem('bridgeToken')||''
+};
 }
 
-function money(value, currency){
-  if(value === undefined || value === null || value === ""){
-    return "--";
-  }
-
-  const number = Number(value);
-
-  if(!Number.isFinite(number)){
-    return "--";
-  }
-
-  return number.toLocaleString("en-US", {
-    minimumFractionDigits:2,
-    maximumFractionDigits:2
-  }) + (currency ? " " + currency : "");
+function base(){
+return settings().url.trim().replace(/\/+$/,'');
 }
 
-function resetAccount(){
-  const ids = [
-    "balance","equity","margin","freeMargin",
-    "profit","account","server","tradeAllowed"
-  ];
-
-  ids.forEach(id=>{
-    document.getElementById(id).textContent = "--";
-  });
-
-  document.getElementById("loginInfo").textContent = "Chưa có dữ liệu";
+function headers(){
+return {
+'Content-Type':'application/json',
+'X-Bridge-Token':settings().token
+};
 }
 
-async function fetchMT5(){
-  const url = urlInput.value.trim().replace(/\/+$/,"");
-  const token = tokenInput.value.trim();
-
-  if(!url || !token) return;
-
-  try{
-    const response = await fetch(url + "/api/status", {
-      method:"GET",
-      headers:{
-        "X-Bridge-Token":token
-      },
-      cache:"no-store"
-    });
-
-    if(!response.ok){
-      throw new Error("HTTP " + response.status);
-    }
-
-    const data = await response.json();
-
-    /*
-      Hỗ trợ cả 2 cấu trúc Bridge:
-
-      Cấu trúc mới:
-      {
-        connected: true,
-        account: {
-          login, server, currency,
-          balance, equity, margin, free_margin
-        }
-      }
-
-      Cấu trúc cũ:
-      {
-        connected: true,
-        terminal_connected: true,
-        login, server, currency,
-        balance, equity, margin, free_margin, profit
-      }
-    */
-
-    const account = data.account || data;
-
-    const terminalConnected =
-      data.connected === true &&
-      data.terminal_connected !== false &&
-      !!account &&
-      account.login !== undefined;
-
-    if(!terminalConnected){
-      throw new Error(
-        data.error ||
-        "Bridge chưa nhận được tài khoản MT5"
-      );
-    }
-
-    const currency = account.currency || data.currency || "";
-
-    const balance = account.balance ?? data.balance;
-    const equity = account.equity ?? data.equity;
-    const margin = account.margin ?? data.margin;
-    const freeMargin = account.free_margin ?? data.free_margin;
-
-    let profit = account.profit ?? data.profit;
-
-    if(profit === undefined || profit === null){
-      if(balance !== undefined && equity !== undefined){
-        profit = Number(equity) - Number(balance);
-      }
-    }
-
-    const login = account.login ?? data.login;
-    const server = account.server ?? data.server;
-
-    const tradeAllowed =
-      account.trade_allowed ??
-      account.trade_allowed_flag ??
-      data.trade_allowed ??
-      data.trade_allowed_flag;
-
-    setStatus(
-      "🟢 MT5 đã kết nối",
-      "green",
-      "Bridge đang nhận dữ liệu tài khoản"
-    );
-
-    document.getElementById("balance").textContent =
-      money(balance,currency);
-
-    document.getElementById("equity").textContent =
-      money(equity,currency);
-
-    document.getElementById("margin").textContent =
-      money(margin,currency);
-
-    document.getElementById("freeMargin").textContent =
-      money(freeMargin,currency);
-
-    document.getElementById("profit").textContent =
-      money(profit,currency);
-
-    document.getElementById("account").textContent =
-      login ?? "--";
-
-    document.getElementById("server").textContent =
-      server ?? "--";
-
-    document.getElementById("tradeAllowed").textContent =
-      tradeAllowed === undefined
-        ? "Chưa có dữ liệu"
-        : (tradeAllowed ? "YES" : "NO");
-
-    document.getElementById("loginInfo").textContent =
-      (login ?? "--") + " · " + (server ?? "--");
-
-    document.getElementById("lastUpdate").textContent =
-      "Cập nhật lúc: " + new Date().toLocaleTimeString("vi-VN");
-
-  }catch(error){
-    setStatus(
-      "🔴 Không kết nối được MT5",
-      "red",
-      error.message
-    );
-
-    document.getElementById("lastUpdate").textContent =
-      "Lỗi: " + error.message;
-
-    resetAccount();
-  }
+function toast(msg){
+$('toast').textContent=msg;
+$('toast').style.display='block';
+clearTimeout(toast.timer);
+toast.timer=setTimeout(()=> $('toast').style.display='none',4000);
 }
 
-function connectBridge(){
-  const url = urlInput.value.trim().replace(/\/+$/,"");
-  const token = tokenInput.value.trim();
+function showPage(id,btn){
+document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
+$(id).classList.remove('hidden');
 
-  if(!url || !token){
-    alert("Nhập Tunnel URL và Bridge Token.");
-    return;
-  }
+$('pageTitle').textContent=({
+assistant:'Trợ lý giao dịch',
+tasks:'Nhiệm vụ',
+alerts:'Thông báo',
+settings:'Cài đặt'
+})[id]||id;
 
-  localStorage.setItem("bridge_url",url);
-  localStorage.setItem("bridge_token",token);
-
-  if(pollTimer){
-    clearInterval(pollTimer);
-  }
-
-  fetchMT5();
-  pollTimer = setInterval(fetchMT5,5000);
+document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+if(btn)btn.classList.add('active');
 }
 
-function disconnectBridge(){
-  if(pollTimer){
-    clearInterval(pollTimer);
-  }
-
-  pollTimer = null;
-
-  localStorage.removeItem("bridge_token");
-  tokenInput.value="";
-
-  resetAccount();
-
-  setStatus(
-    "🟡 Đã ngắt kết nối",
-    "yellow",
-    "Bridge Token đã được xóa"
-  );
-
-  document.getElementById("lastUpdate").textContent =
-    "Đã ngắt kết nối.";
+function saveSettings(){
+localStorage.setItem('bridgeUrl',$('tunnel').value.trim().replace(/\/+$/,''));
+localStorage.setItem('bridgeToken',$('token').value.trim());
+toast('Đã lưu cấu hình kết nối');
 }
 
-if(localStorage.getItem("bridge_token")){
-  connectBridge();
+async function api(path,opt={}){
+if(!base()||!settings().token)
+throw new Error('Hãy nhập Tunnel URL và Bridge Token trong Cài đặt.');
+
+let res=await fetch(base()+path,{
+...opt,
+headers:{...headers(),...(opt.headers||{})}
+});
+
+let data=await res.json().catch(()=>({detail:'Phản hồi không hợp lệ'}));
+
+if(!res.ok)
+throw new Error(data.detail||('HTTP '+res.status));
+
+return data;
 }
+
+async function testConnection(){
+saveSettings();
+
+try{
+let d=await api('/api/status');
+
+$('connection').textContent=d.connected
+?'🟢 MT5 đã kết nối'
+:'🟠 Bridge phản hồi, MT5 chưa sẵn sàng';
+
+$('accountline').textContent=d.account
+?`Tài khoản ${d.account.login} · ${d.account.server} · ${d.account.currency}`
+:(d.error||'Bridge đã phản hồi');
+
+$('connectionDetails').textContent=d.account
+?`Login: ${d.account.login} | Server: ${d.account.server} | Balance: ${d.account.balance} | Equity: ${d.account.equity}`
+:(d.error||'Bridge đang hoạt động');
+
+await refreshTasks();
+
+toast(d.connected
+?'Kết nối MT5 thành công'
+:'Bridge kết nối, nhưng MT5 chưa sẵn sàng');
+
+}catch(e){
+$('connection').textContent='🔴 Không kết nối được';
+$('accountline').textContent=e.message;
+$('connectionDetails').textContent=e.message;
+toast(e.message);
+}
+}
+
+function timeframeFrom(text){
+return (text.match(/\b(M1|M5|M15|M30|H1|H4|D1)\b/i)||[])[1]?.toUpperCase()||'M5';
+}
+
+function symbolFrom(text){
+let s=(text.match(/\b(XAUUSDm|XAUUSD|XAU|GOLD|BTCUSDm|BTCUSD|BTC|USDJPYm|USDJPY|EURUSD|GBPUSD)\b/i)||[])[1];
+if(!s)return null;
+return ({XAU:'XAUUSD',GOLD:'XAUUSD',BTC:'BTCUSD'})[s.toUpperCase()]||s.toUpperCase();
+}
+
+function parseTask(text){
+let sym=symbolFrom(text),tf=timeframeFrom(text);
+if(!sym)return null;
+
+let match=text.match(/(?:chạm|đạt|đến|về|mức|level|trên|dưới|vượt|xuống|above|below|cross(?:es)?|at)\s*(\d{1,3}(?:\.\d+)?)/i);
+
+if(!match)
+match=text.match(/RSI\s*(\d{1,3}(?:\.\d+)?)(?![A-Za-z])/i);
+
+if(!match)return null;
+
+let level=Number(match[1]);
+if(level<0||level>100)return null;
+
+let cond='cross';
+if(/\b(trên|vượt|cao hơn|greater|above)\b/i.test(text))cond='above';
+if(/\b(dưới|thấp hơn|below)\b/i.test(text))cond='below';
+
+return {
+symbol:sym,
+timeframe:tf,
+indicator:'RSI',
+period:14,
+level,
+condition:cond,
+note:text
+};
+}
+
+function addMsg(text,who='bot'){
+let d=document.createElement('div');
+d.className='msg '+(who==='user'?'user':'bot');
+d.textContent=text;
+$('messages').appendChild(d);
+$('messages').scrollTop=$('messages').scrollHeight;
+}
+
+async function send(){
+let input=$('prompt'),text=input.value.trim();
+if(!text)return;
+
+input.value='';
+addMsg(text,'user');
+
+let low=text.toLowerCase();
+
+if(/liệt kê|danh sách|nhiệm vụ đang/.test(low)){
+await refreshTasks();
+addMsg('Đã cập nhật danh sách nhiệm vụ. Mở mục Nhiệm vụ để xem trạng thái.');
+return;
+}
+
+if(/kết nối|connect mt5/.test(low)){
+await testConnection();
+return;
+}
+
+if(/phân tích|xu hướng|trend/.test(low)){
+let sym=symbolFrom(text);
+if(sym)$('aiSymbol').value=sym;
+let tf=timeframeFrom(text);
+$('aiTf').value=tf;
+await analyzeMarket();
+return;
+}
+
+let parsed=parseTask(text);
+
+if(!parsed){
+addMsg('Tôi chưa nhận diện được yêu cầu. Ví dụ: “Theo dõi XAUUSDm RSI M5 chạm 60 thì báo tôi.”');
+return;
+}
+
+try{
+let created=await api('/api/tasks',{
+method:'POST',
+body:JSON.stringify(parsed)
+});
+
+addMsg(`Đã tạo nhiệm vụ #${created.id}: ${created.symbol} RSI(${created.period}) ${created.timeframe} ${created.condition==='cross'?'cắt qua':created.condition==='above'?'vượt':'xuống dưới'} ${created.level}. Theo dõi trên MT5 Bridge.`);
+
+await refreshTasks();
+
+}catch(e){
+addMsg('Không tạo được nhiệm vụ: '+e.message);
+}
+}
+
+async function refreshTasks(){
+try{
+let data=await api('/api/tasks');
+tasks=data.tasks||[];
+renderTasks();
+}catch(e){
+$('taskList').innerHTML='<div class="small">'+esc(e.message)+'</div>';
+}
+}
+
+function renderTasks(){
+let active=tasks.filter(t=>t.active).length;
+$('count').textContent=active+' nhiệm vụ';
+$('taskSummary').textContent=`${active} đang chạy · ${tasks.length} tổng`;
+
+if(!tasks.length){
+$('taskList').innerHTML='<p class="small">Chưa có nhiệm vụ nào.</p>';
+return;
+}
+
+$('taskList').innerHTML='';
+
+tasks.slice().reverse().forEach(t=>{
+let div=document.createElement('div');
+div.className='task';
+
+let info=document.createElement('div');
+
+info.innerHTML=`
+<div class="tasktitle">${esc(t.symbol)} · RSI(${t.period}) ${esc(t.timeframe)} ${esc(t.condition)} ${t.level}</div>
+<div class="small" style="margin-top:6px">
+Giá trị hiện tại: ${t.last_value==null?'—':Number(t.last_value).toFixed(2)}
+${t.last_error?' · '+esc(t.last_error):''}
+</div>
+<div style="margin-top:7px">
+<span class="tag">${t.active?'Đang chạy':t.triggered_at?'Đã kích hoạt':'Đã dừng'}</span>
+</div>
+${t.trigger_message?`<p>${esc(t.trigger_message)}</p>`:''}
+`;
+
+let actions=document.createElement('div');
+actions.className='taskactions';
+
+if(t.active){
+let stop=document.createElement('button');
+stop.className='secondary';
+stop.textContent='Dừng';
+stop.onclick=()=>taskAction(t.id,'stop');
+actions.append(stop);
+}else{
+let resume=document.createElement('button');
+resume.className='secondary';
+resume.textContent='Chạy lại';
+resume.onclick=()=>taskAction(t.id,'resume');
+actions.append(resume);
+}
+
+let del=document.createElement('button');
+del.className='danger';
+del.textContent='Xóa';
+del.onclick=()=>taskAction(t.id,'delete');
+actions.append(del);
+
+div.append(info,actions);
+$('taskList').append(div);
+});
+}
+
+function esc(s){
+return String(s??'').replace(/[&<>"']/g,c=>({
+'&':'&amp;',
+'<':'&lt;',
+'>':'&gt;',
+'"':'&quot;',
+"'":'&#39;'
+}[c])));
+}
+
+async function taskAction(id,action){
+try{
+if(action==='delete')
+await api('/api/tasks/'+id,{method:'DELETE'});
+else
+await api('/api/tasks/'+id+'/'+action,{method:'POST'});
+
+await refreshTasks();
+}catch(e){
+toast(e.message);
+}
+}
+
+async function enableNotifications(){
+if(!('Notification'in window)){
+toast('Trình duyệt không hỗ trợ thông báo');
+return;
+}
+
+let p=await Notification.requestPermission();
+notifEnabled=p==='granted';
+
+$('notifyState').textContent=notifEnabled
+?'Đã bật thông báo'
+:'Chưa cấp quyền thông báo';
+
+toast(notifEnabled
+?'Đã bật thông báo'
+:'Chưa cấp quyền thông báo');
+}
+
+function showAlert(t){
+alerts.unshift(t);
+
+let text=t.trigger_message||`${t.symbol} RSI đạt điều kiện`;
+
+if(notifEnabled&&Notification.permission==='granted')
+new Notification('AI Trading Assistant',{body:text});
+
+$('alertList').innerHTML=alerts.map(a=>`
+<div class="task">
+<div>
+${esc(a.trigger_message||a.symbol+' RSI đã kích hoạt')}
+<div class="small">
+${a.triggered_at?new Date(a.triggered_at).toLocaleString():''}
+</div>
+</div>
+</div>
+`).join('');
+}
+
+async function poll(){
+if(!base()||!settings().token)return;
+
+try{
+let d=await api('/api/tasks');
+let fresh=d.tasks||[];
+
+fresh.forEach(t=>{
+let old=tasks.find(x=>x.id===t.id);
+
+if(t.triggered_at&&(!old||!old.triggered_at)){
+showAlert(t);
+toast(t.trigger_message||'Nhiệm vụ kích hoạt');
+}
+});
+
+tasks=fresh;
+renderTasks();
+}catch{}
+}
+
+function bridgeGet(path){
+return api(path);
+}
+
+function ema(values,period){
+if(values.length<period)return null;
+
+let k=2/(period+1);
+let v=values.slice(0,period).reduce((a,b)=>a+b,0)/period;
+
+for(let i=period;i<values.length;i++)
+v=values[i]*k+v*(1-k);
+
+return v;
+}
+
+function calcRSI(values,period=14){
+if(values.length<period+1)return null;
+
+let gain=0,loss=0;
+
+for(let i=1;i<=period;i++){
+let d=values[i]-values[i-1];
+gain+=Math.max(d,0);
+loss+=Math.max(-d,0);
+}
+
+gain/=period;
+loss/=period;
+
+for(let i=period+1;i<values.length;i++){
+let d=values[i]-values[i-1];
+gain=(gain*(period-1)+Math.max(d,0))/period;
+loss=(loss*(period-1)+Math.max(-d,0))/period;
+}
+
+return loss===0?100:100-100/(1+gain/loss);
+}
+
+async function analyzeMarket(){
+const out=$('analysisResult');
+out.textContent='Đang lấy dữ liệu MT5...';
+
+try{
+const symbol=$('aiSymbol').value;
+const tf=$('aiTf').value;
+
+const m=await bridgeGet(
+'/api/market?symbol='+encodeURIComponent(symbol)+'&timeframe='+tf+'&bars=150'
+);
+
+const bars=m.bars;
+
+if(!bars||bars.length<30)
+throw new Error('Bridge trả về không đủ nến');
+
+const closes=bars.map(x=>x.close);
+const last=bars[bars.length-1];
+const e20=ema(closes,20);
+const e50=ema(closes,50);
+const r=calcRSI(closes,14);
+
+let trend=
+last.close>e20&&e20>e50
+?'Xu hướng tăng (giá > EMA20 > EMA50)'
+:last.close<e20&&e20<e50
+?'Xu hướng giảm (giá < EMA20 < EMA50)'
+:'Chưa rõ xu hướng / đang đi ngang';
+
+let momentum=
+r>=70?'RSI quá mua'
+:r<=30?'RSI quá bán'
+:r>50?'RSI nghiêng tăng'
+:'RSI nghiêng giảm';
+
+let candle=
+last.close>last.open?'Nến cuối tăng'
+:last.close<last.open?'Nến cuối giảm'
+:'Nến cuối doji';
+
+let body=Math.abs(last.close-last.open);
+let wickTop=last.high-Math.max(last.open,last.close);
+let wickBottom=Math.min(last.open,last.close)-last.low;
+
+let candleNote=
+body>0&&wickTop>body*2&&wickTop>wickBottom
+?'Râu trên dài: có áp lực bán ở vùng cao'
+:body>0&&wickBottom>body*2&&wickBottom>wickTop
+?'Râu dưới dài: có lực đỡ ở vùng thấp'
+:'Nến chưa có dấu hiệu râu nổi bật';
+
+let view=`${symbol} · ${tf}
+Giá đóng nến gần nhất: ${last.close}
+${trend}
+EMA20: ${e20?.toFixed(5)} | EMA50: ${e50?.toFixed(5)}
+RSI14: ${r?.toFixed(2)} (${momentum})
+${candle} · ${candleNote}
+
+Nhận định: ${
+trend.includes('tăng')
+?'Ưu tiên quan sát cơ hội BUY sau pullback, không đuổi giá.'
+:trend.includes('giảm')
+?'Ưu tiên quan sát SELL khi hồi lên, không bán đuổi.'
+:'Chờ giá phá vùng hoặc xác nhận hướng; tránh vào giữa vùng nhiễu.'
+}
+Đây là phân tích chỉ báo cơ bản, chưa phải tín hiệu vào lệnh xác nhận.`;
+
+out.textContent=view;
+addMsg(view);
+
+}catch(e){
+out.textContent='Không phân tích được: '+e.message;
+addMsg('Không phân tích được: '+e.message);
+}
+}
+
+window.addEventListener('load',()=>{
+$('tunnel').value=settings().url;
+$('token').value=settings().token;
+
+pollHandle=setInterval(poll,5000);
+
+if(settings().url&&settings().token)
+testConnection();
+});
 </script>
 
 </body>
