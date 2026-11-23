@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Trading Assistant</title>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#0b0e14;color:#e6edf7;font-family:Arial,sans-serif}
@@ -16,6 +17,7 @@ body{margin:0;background:#0b0e14;color:#e6edf7;font-family:Arial,sans-serif}
 .status{font-size:16px;font-weight:bold}
 .green{color:#38d996}
 .red{color:#ff6868}
+.yellow{color:#ffc857}
 .menu{padding:12px;border-radius:9px;margin:5px 0;color:#b7c2d2}
 .menu.active{background:#1c2b40;color:#65a9ff}
 .main{flex:1;display:flex;flex-direction:column;min-width:0}
@@ -24,7 +26,7 @@ body{margin:0;background:#0b0e14;color:#e6edf7;font-family:Arial,sans-serif}
 h2{margin-top:0}
 .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .metric{background:#192230;border:1px solid #283447;border-radius:12px;padding:18px}
-.metric .value{font-size:24px;font-weight:bold;margin-top:8px}
+.metric .value{font-size:24px;font-weight:bold;margin-top:8px;overflow-wrap:anywhere}
 input,button{font:inherit}
 input{background:#0b0e14;color:#fff;border:1px solid #344155;border-radius:9px;padding:12px;width:100%;margin:6px 0}
 button{background:#2878ef;color:white;border:0;border-radius:9px;padding:12px 16px;cursor:pointer}
@@ -49,6 +51,7 @@ button:hover{opacity:.88}
 }
 </style>
 </head>
+
 <body>
 <div class="app">
 
@@ -57,7 +60,7 @@ button:hover{opacity:.88}
 
   <div class="card">
     <div class="label">KẾT NỐI THỊ TRƯỜNG</div>
-    <div class="status" id="connectionStatus">🟡 Chưa kết nối</div>
+    <div class="status yellow" id="connectionStatus">🟡 Chưa kết nối</div>
     <div class="note" id="connectionDetail">Đang chờ kết nối MT5</div>
   </div>
 
@@ -100,30 +103,37 @@ button:hover{opacity:.88}
         <div class="label">Balance</div>
         <div class="value" id="balance">--</div>
       </div>
+
       <div class="metric">
         <div class="label">Equity</div>
         <div class="value" id="equity">--</div>
       </div>
+
       <div class="metric">
         <div class="label">Margin</div>
         <div class="value" id="margin">--</div>
       </div>
+
       <div class="metric">
         <div class="label">Free Margin</div>
         <div class="value" id="freeMargin">--</div>
       </div>
+
       <div class="metric">
         <div class="label">Profit</div>
         <div class="value" id="profit">--</div>
       </div>
+
       <div class="metric">
         <div class="label">Tài khoản</div>
         <div class="value" id="account">--</div>
       </div>
+
       <div class="metric">
         <div class="label">Server</div>
         <div class="value" id="server">--</div>
       </div>
+
       <div class="metric">
         <div class="label">Trade Allowed</div>
         <div class="value" id="tradeAllowed">--</div>
@@ -141,7 +151,7 @@ button:hover{opacity:.88}
 </div>
 
 <script>
-const DEFAULT_URL = "https://blocks-transmit-shuttle-medicines.trycloudflare.com";
+const DEFAULT_URL = "";
 
 const urlInput = document.getElementById("bridgeUrl");
 const tokenInput = document.getElementById("bridgeToken");
@@ -150,20 +160,44 @@ urlInput.value = localStorage.getItem("bridge_url") || DEFAULT_URL;
 tokenInput.value = localStorage.getItem("bridge_token") || "";
 
 let pollTimer = null;
+let isConnecting = false;
 
 function setStatus(text, color, detail){
   const el = document.getElementById("connectionStatus");
   el.textContent = text;
   el.className = "status " + color;
+
   document.getElementById("connectionDetail").textContent = detail || "";
 }
 
-function money(value){
-  if(value === undefined || value === null) return "--";
-  return Number(value).toLocaleString("en-US", {
+function money(value, currency){
+  if(value === undefined || value === null || value === ""){
+    return "--";
+  }
+
+  const number = Number(value);
+
+  if(!Number.isFinite(number)){
+    return "--";
+  }
+
+  return number.toLocaleString("en-US", {
     minimumFractionDigits:2,
     maximumFractionDigits:2
+  }) + (currency ? " " + currency : "");
+}
+
+function resetAccount(){
+  const ids = [
+    "balance","equity","margin","freeMargin",
+    "profit","account","server","tradeAllowed"
+  ];
+
+  ids.forEach(id=>{
+    document.getElementById(id).textContent = "--";
   });
+
+  document.getElementById("loginInfo").textContent = "Chưa có dữ liệu";
 }
 
 async function fetchMT5(){
@@ -177,7 +211,8 @@ async function fetchMT5(){
       method:"GET",
       headers:{
         "X-Bridge-Token":token
-      }
+      },
+      cache:"no-store"
     });
 
     if(!response.ok){
@@ -186,47 +221,115 @@ async function fetchMT5(){
 
     const data = await response.json();
 
-    if(!data.connected || !data.terminal_connected){
-      throw new Error("MT5 chưa kết nối Terminal");
+    /*
+      Hỗ trợ cả 2 cấu trúc Bridge:
+
+      Cấu trúc mới:
+      {
+        connected: true,
+        account: {
+          login, server, currency,
+          balance, equity, margin, free_margin
+        }
+      }
+
+      Cấu trúc cũ:
+      {
+        connected: true,
+        terminal_connected: true,
+        login, server, currency,
+        balance, equity, margin, free_margin, profit
+      }
+    */
+
+    const account = data.account || data;
+
+    const terminalConnected =
+      data.connected === true &&
+      data.terminal_connected !== false &&
+      !!account &&
+      account.login !== undefined;
+
+    if(!terminalConnected){
+      throw new Error(
+        data.error ||
+        "Bridge chưa nhận được tài khoản MT5"
+      );
     }
 
-    setStatus("🟢 MT5 đã kết nối","green",
-      "Đang nhận dữ liệu tài khoản thật");
+    const currency = account.currency || data.currency || "";
+
+    const balance = account.balance ?? data.balance;
+    const equity = account.equity ?? data.equity;
+    const margin = account.margin ?? data.margin;
+    const freeMargin = account.free_margin ?? data.free_margin;
+
+    let profit = account.profit ?? data.profit;
+
+    if(profit === undefined || profit === null){
+      if(balance !== undefined && equity !== undefined){
+        profit = Number(equity) - Number(balance);
+      }
+    }
+
+    const login = account.login ?? data.login;
+    const server = account.server ?? data.server;
+
+    const tradeAllowed =
+      account.trade_allowed ??
+      account.trade_allowed_flag ??
+      data.trade_allowed ??
+      data.trade_allowed_flag;
+
+    setStatus(
+      "🟢 MT5 đã kết nối",
+      "green",
+      "Bridge đang nhận dữ liệu tài khoản"
+    );
 
     document.getElementById("balance").textContent =
-      money(data.balance) + " " + (data.currency || "");
+      money(balance,currency);
 
     document.getElementById("equity").textContent =
-      money(data.equity) + " " + (data.currency || "");
+      money(equity,currency);
 
     document.getElementById("margin").textContent =
-      money(data.margin) + " " + (data.currency || "");
+      money(margin,currency);
 
     document.getElementById("freeMargin").textContent =
-      money(data.free_margin) + " " + (data.currency || "");
+      money(freeMargin,currency);
 
     document.getElementById("profit").textContent =
-      money(data.profit) + " " + (data.currency || "");
+      money(profit,currency);
 
     document.getElementById("account").textContent =
-      data.login || "--";
+      login ?? "--";
 
     document.getElementById("server").textContent =
-      data.server || "--";
+      server ?? "--";
 
     document.getElementById("tradeAllowed").textContent =
-      data.trade_allowed ? "YES" : "NO";
+      tradeAllowed === undefined
+        ? "Chưa có dữ liệu"
+        : (tradeAllowed ? "YES" : "NO");
 
     document.getElementById("loginInfo").textContent =
-      (data.login || "--") + " · " + (data.server || "--");
+      (login ?? "--") + " · " + (server ?? "--");
 
     document.getElementById("lastUpdate").textContent =
       "Cập nhật lúc: " + new Date().toLocaleTimeString("vi-VN");
 
   }catch(error){
-    setStatus("🔴 Không kết nối được MT5","red",error.message);
+    setStatus(
+      "🔴 Không kết nối được MT5",
+      "red",
+      error.message
+    );
+
     document.getElementById("lastUpdate").textContent =
       "Lỗi: " + error.message;
+
+    resetAccount();
   }
 }
 
@@ -242,25 +345,40 @@ function connectBridge(){
   localStorage.setItem("bridge_url",url);
   localStorage.setItem("bridge_token",token);
 
-  if(pollTimer) clearInterval(pollTimer);
+  if(pollTimer){
+    clearInterval(pollTimer);
+  }
 
   fetchMT5();
   pollTimer = setInterval(fetchMT5,5000);
 }
 
 function disconnectBridge(){
-  if(pollTimer) clearInterval(pollTimer);
+  if(pollTimer){
+    clearInterval(pollTimer);
+  }
+
   pollTimer = null;
 
   localStorage.removeItem("bridge_token");
   tokenInput.value="";
 
-  setStatus("🟡 Đã ngắt kết nối","red","Bridge Token đã được xóa");
+  resetAccount();
+
+  setStatus(
+    "🟡 Đã ngắt kết nối",
+    "yellow",
+    "Bridge Token đã được xóa"
+  );
+
+  document.getElementById("lastUpdate").textContent =
+    "Đã ngắt kết nối.";
 }
 
 if(localStorage.getItem("bridge_token")){
   connectBridge();
 }
 </script>
+
 </body>
 </html>
